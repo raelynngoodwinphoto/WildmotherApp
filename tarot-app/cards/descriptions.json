@@ -22,7 +22,7 @@
     {
       "id": 2,
       "name": "The Star",
-      "image": "cards/images/theStar.png",
+      "image": "cards/images/thestar.png",
       "keywords": ["hope", "inspiration", "guidance", "renewal"],
       "description": "A lone wolf lifts her voice to the heavens, howling beneath a sky drenched in stars. At her feet rests a bowl of still water, reflecting starlight. She is surrounded by wildflowers — quiet witnesses to her longing and her light. This is not the cry of despair, but of remembrance. She sings not because hope is lost, but because she is listening. And somewhere in the vast sky, something answers back.",
       "upright": "The Star is a card of hope, inspiration, divine guidance, and spiritual renewal. After darkness comes light, and this card brings optimism and clarity.",
@@ -31,10 +31,12 @@
     {
       "id": 3,
       "name": "The Hollow",
+      "subtitle": "(formerly Death)",
       "image": "cards/images/TheHollow.png",
       "keywords": ["emptiness", "void", "potential", "stillness"],
-      "upright": "The Hollow represents emptiness that holds infinite potential, the void before creation, and the power of stillness. Sometimes we must empty ourselves to be filled anew.",
-      "reversed": "Reversed, The Hollow can indicate feeling empty without purpose, depression, or inability to move forward."
+      "description": "Deep beneath the earth, a bear sleeps in quiet surrender. Curled into herself, she rests beside a crumpled map and a bone bell — relics of the life she is releasing. Above her, under a full moon sky, a ghostly stag watches in silence. He is not here to awaken her, but to witness the sacred pause. The Hollow is not an ending. It is a waiting place. A womb. A grave. A promise.",
+      "upright": "The Hollow is a card of release, transition, and surrender to what is dying or already gone. This is a sacred threshold — the moment when the old self falls away and the new has not yet arrived. The bear does not resist the descent. She allows herself to rest, to grieve, to dream in the dark. You are being asked to honor what is complete. Let the bone bell ring out your farewell. There is nothing to fix, only something to lay down. What's ahead will emerge in its time.",
+      "reversed": "When reversed, The Hollow may point to fear of letting go, clinging to what no longer fits, or bypassing the grief that precedes rebirth. You may be resisting the stillness, trying to force clarity before it's ready. This card urges you to soften into the mystery. Not all healing happens in motion. Some transformations require stillness, silence, even surrender. If you feel lost, remember: the seed doesn't grow in the light — it begins in the dark."
     },
     {
       "id": 4,
