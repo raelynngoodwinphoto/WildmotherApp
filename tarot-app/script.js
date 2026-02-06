@@ -1,3 +1,14 @@
+// ============================================
+// AUTHENTICATION CHECK
+// ============================================
+// Redirect to login if not authenticated
+if (typeof isAuthenticated === 'function' && !isAuthenticated()) {
+    window.location.href = 'login.html';
+}
+
+// ============================================
+// CARD DATA
+// ============================================
 // Card data embedded directly to avoid CORS issues with file:// protocol
 const cardsData = {
   "cards": [
