@@ -339,3 +339,49 @@ body {
         font-size: 0.8rem;
     }
 }
+
+/* ============================================
+   USER HEADER - AUTHENTICATION
+   ============================================ */
+
+.user-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 15px 20px;
+    background: rgba(26, 74, 85, 0.4);
+    border: 1px solid #c9a961;
+    border-radius: 10px;
+}
+
+.user-email {
+    color: #d4b873;
+    font-size: 0.9rem;
+}
+
+.logout-btn {
+    background: linear-gradient(145deg, #8b7355, #6b5845);
+    border: 1px solid #c9a961;
+    color: #e8dcc0;
+    padding: 8px 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(201, 169, 97, 0.4);
+}
+
+/* Responsive adjustments for user header */
+@media (max-width: 768px) {
+    .user-header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+}
+}

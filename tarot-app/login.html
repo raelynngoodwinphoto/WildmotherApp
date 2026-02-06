@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - Wild Mother Tarot</title>
+    <link rel="stylesheet" href="auth-styles.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="logo">
+            <h1>Wild Mother Tarot</h1>
+            <p>Sign in to access your readings</p>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="you@example.com"
+                    required
+                    autocomplete="email"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    required
+                    autocomplete="current-password"
+                >
+            </div>
+
+            <button type="submit" class="btn-primary" id="submitBtn">Sign In</button>
+        </form>
+
+        <p class="auth-link">
+            Don't have an account? <a href="register.html">Create one</a>
+        </p>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        // Check if already logged in - redirect to main app
+        if (isAuthenticated()) {
+            window.location.href = 'index.html';
+        }
+
+        // Check for registration success message
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('registered') === 'true') {
+            showMessage('message', 'Registration successful! Please sign in.', 'success');
+        }
+
+        const form = document.getElementById('loginForm');
+        const messageDiv = document.getElementById('message');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            // Clear previous messages
+            messageDiv.className = 'message';
+            messageDiv.textContent = '';
+
+            // Disable button during request
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Signing In...';
+
+            // Call login function from auth.js
+            const result = await login(email, password);
+
+            if (result.success) {
+                // Store tokens
+                setTokens(result.data.accessToken, result.data.refreshToken);
+
+                showMessage('message', 'Signed in successfully! Redirecting...', 'success');
+                form.reset();
+
+                // Redirect to main app after brief delay
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            } else {
+                showMessage('message', result.error, 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Sign In';
+            }
+        });
+    </script>
+</body>
+</html>
