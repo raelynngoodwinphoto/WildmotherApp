@@ -763,6 +763,7 @@ let currentSpread = null;
 let selectedCards = [];
 
 // DOM elements
+const homePage = document.getElementById('home-page');
 const spreadSelection = document.getElementById('spread-selection');
 const oneCardBtn = document.getElementById('one-card-btn');
 const fourCardBtn = document.getElementById('four-card-btn');
@@ -774,6 +775,14 @@ const cardDescriptions = document.getElementById('card-descriptions');
 const resetContainer = document.getElementById('reset-container');
 const resetBtn = document.getElementById('reset-btn');
 const reflectionsTextarea = document.getElementById('reflections-textarea');
+const questionDisplay = document.getElementById('question-display');
+const questionText = document.getElementById('question-text');
+
+// Home page buttons
+const homeReadings = document.getElementById('home-readings');
+const homeJournal = document.getElementById('home-journal');
+const homeCardOfDay = document.getElementById('home-card-of-day');
+const homeWebsite = document.getElementById('home-website');
 
 // Shuffle array (Fisher-Yates algorithm)
 function shuffleArray(array) {
@@ -879,7 +888,8 @@ function setupSpread(spreadType) {
     // Select random cards
     selectedCards = selectCards(spreadType);
 
-    // Hide spread selection
+    // Hide everything else
+    homePage.classList.add('hidden');
     spreadSelection.classList.add('hidden');
 
     // Show card area
@@ -889,6 +899,15 @@ function setupSpread(spreadType) {
     positionLabels.innerHTML = '';
     cardsContainer.innerHTML = '';
     cardDescriptions.innerHTML = '';
+
+    // Display question if it exists
+    const savedQuestion = localStorage.getItem('currentQuestion');
+    if (savedQuestion && savedQuestion.trim()) {
+        questionText.textContent = savedQuestion;
+        questionDisplay.classList.remove('hidden');
+    } else {
+        questionDisplay.classList.add('hidden');
+    }
 
     // Create position labels
     positions.forEach(position => {
@@ -905,16 +924,27 @@ function setupSpread(spreadType) {
     }
 }
 
-// Reset reading
-function resetReading() {
-    // Hide everything
+// Navigation functions
+function showHome() {
+    homePage.classList.remove('hidden');
+    spreadSelection.classList.add('hidden');
     cardArea.classList.add('hidden');
     readingArea.classList.add('hidden');
     resetContainer.classList.add('hidden');
+    questionDisplay.classList.add('hidden');
+}
 
-    // Show spread selection
+function showSpreadSelection() {
+    homePage.classList.add('hidden');
     spreadSelection.classList.remove('hidden');
+    cardArea.classList.add('hidden');
+    readingArea.classList.add('hidden');
+    resetContainer.classList.add('hidden');
+    questionDisplay.classList.add('hidden');
+}
 
+// Reset reading
+function resetReading() {
     // Clear data
     currentSpread = null;
     selectedCards = [];
@@ -922,9 +952,129 @@ function resetReading() {
     cardsContainer.innerHTML = '';
     cardDescriptions.innerHTML = '';
     reflectionsTextarea.value = '';
+    questionText.textContent = '';
+    readingQuestion.value = '';
+    localStorage.removeItem('currentQuestion');
+
+    // Show spread selection
+    showSpreadSelection();
 }
 
 // Event listeners
-oneCardBtn.addEventListener('click', () => setupSpread(1));
-fourCardBtn.addEventListener('click', () => setupSpread(4));
+oneCardBtn.addEventListener('click', () => {
+    // Save question if provided
+    const question = readingQuestion.value.trim();
+    if (question) {
+        localStorage.setItem('currentQuestion', question);
+    }
+    setupSpread(1);
+});
+
+fourCardBtn.addEventListener('click', () => {
+    // Save question if provided
+    const question = readingQuestion.value.trim();
+    if (question) {
+        localStorage.setItem('currentQuestion', question);
+    }
+    setupSpread(4);
+});
+
 resetBtn.addEventListener('click', resetReading);
+
+// ============================================
+// MENU SYSTEM
+// ============================================
+
+// Get menu elements
+const menuToggle = document.getElementById('menu-toggle');
+const menuOverlay = document.getElementById('menu-overlay');
+const menuClose = document.getElementById('menu-close');
+const menuHome = document.getElementById('menu-home');
+const menuJournal = document.getElementById('menu-journal');
+const menuExplore = document.getElementById('menu-explore');
+const readingQuestion = document.getElementById('reading-question');
+const logoutBtn = document.getElementById('logoutBtn');
+const menuUserEmail = document.getElementById('menuUserEmail');
+
+// Open menu
+function openMenu() {
+    menuOverlay.classList.remove('hidden');
+}
+
+// Close menu
+function closeMenu() {
+    menuOverlay.classList.add('hidden');
+}
+
+// Menu toggle button
+menuToggle.addEventListener('click', openMenu);
+
+// Close button
+menuClose.addEventListener('click', closeMenu);
+
+// Close menu when clicking outside the menu content
+menuOverlay.addEventListener('click', (e) => {
+    if (e.target === menuOverlay) {
+        closeMenu();
+    }
+});
+
+// Close menu with Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !menuOverlay.classList.contains('hidden')) {
+        closeMenu();
+    }
+});
+
+// Menu - Home button
+menuHome.addEventListener('click', () => {
+    closeMenu();
+    showHome();
+});
+
+// Menu - Journal button
+menuJournal.addEventListener('click', () => {
+    closeMenu();
+    alert('Journal feature coming soon! This will allow you to save and review your past readings.');
+    // TODO: Implement journal page/feature
+});
+
+// Menu - Explore Website button
+menuExplore.addEventListener('click', () => {
+    const websiteUrl = 'https://www.bloodhoneycollective.com';
+    window.open(websiteUrl, '_blank');
+    closeMenu();
+});
+
+// Home Page - Readings button
+homeReadings.addEventListener('click', () => {
+    showSpreadSelection();
+});
+
+// Home Page - Journal button
+homeJournal.addEventListener('click', () => {
+    alert('Journal feature coming soon! This will allow you to save and review your past readings.');
+    // TODO: Implement journal page/feature
+});
+
+// Home Page - Card of the Day button
+homeCardOfDay.addEventListener('click', () => {
+    // Automatically start a one-card reading
+    homePage.classList.add('hidden');
+    cardArea.classList.remove('hidden');
+    setupSpread(1);
+});
+
+// Home Page - Visit Website button
+homeWebsite.addEventListener('click', () => {
+    const websiteUrl = 'https://www.bloodhoneycollective.com';
+    window.open(websiteUrl, '_blank');
+});
+
+// Logout button in menu
+logoutBtn.addEventListener('click', () => {
+    if (confirm('Are you sure you want to sign out?')) {
+        logout();
+        window.location.href = 'login.html';
+    }
+});

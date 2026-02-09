@@ -8,14 +8,117 @@
 </head>
 <body>
     <div class="container">
-        <!-- User Header -->
-        <div class="user-header">
-            <span id="userEmail" class="user-email"></span>
-            <button id="logoutBtn" class="logout-btn">Sign Out</button>
+        <!-- Menu Button -->
+        <button id="menu-toggle" class="menu-toggle">☰ Menu</button>
+
+        <!-- Menu Overlay -->
+        <div id="menu-overlay" class="menu-overlay hidden">
+            <div class="menu-content">
+                <button id="menu-close" class="menu-close">✕</button>
+
+                <h2 class="menu-title">Wild Mother Tarot</h2>
+
+                <!-- User Info in Menu -->
+                <div class="menu-user-info">
+                    <span id="menuUserEmail" class="menu-user-email"></span>
+                </div>
+
+                <!-- Menu Buttons -->
+                <div class="menu-buttons">
+                    <button id="menu-home" class="menu-btn">
+                        <span class="menu-btn-icon">🏠</span>
+                        <span class="menu-btn-text">Home</span>
+                    </button>
+
+                    <button id="menu-journal" class="menu-btn">
+                        <span class="menu-btn-icon">📖</span>
+                        <span class="menu-btn-text">Journal</span>
+                    </button>
+
+                    <button id="menu-explore" class="menu-btn">
+                        <span class="menu-btn-icon">✨</span>
+                        <span class="menu-btn-text">Visit Website</span>
+                    </button>
+
+                    <button id="logoutBtn" class="menu-btn menu-btn-logout">
+                        <span class="menu-btn-icon">🚪</span>
+                        <span class="menu-btn-text">Sign Out</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Home Page -->
+        <div id="home-page" class="home-page">
+            <div class="home-header">
+                <h1 class="home-title">Blood & Honey Collective</h1>
+                <h2 class="home-subtitle">presents</h2>
+                <h1 class="home-main-title">Wildmother Tarot</h1>
+            </div>
+
+            <div class="home-options">
+                <button id="home-readings" class="home-option-btn">
+                    <div class="home-option-icon">
+                        <div class="tarot-cards-icon">
+                            <div class="mini-card card-1"></div>
+                            <div class="mini-card card-2"></div>
+                            <div class="mini-card card-3"></div>
+                        </div>
+                    </div>
+                    <h3 class="home-option-title">Readings</h3>
+                    <p class="home-option-desc">Explore your path with tarot</p>
+                </button>
+
+                <button id="home-journal" class="home-option-btn">
+                    <div class="home-option-icon">
+                        <div class="journal-icon">
+                            <div class="book"></div>
+                            <div class="pen"></div>
+                        </div>
+                    </div>
+                    <h3 class="home-option-title">Your Journal</h3>
+                    <p class="home-option-desc">Record your insights</p>
+                </button>
+
+                <button id="home-card-of-day" class="home-option-btn">
+                    <div class="home-option-icon">
+                        <div class="card-of-day-icon">
+                            <div class="single-card"></div>
+                            <div class="sparkles">✨</div>
+                        </div>
+                    </div>
+                    <h3 class="home-option-title">Card of the Day</h3>
+                    <p class="home-option-desc">Daily guidance awaits</p>
+                </button>
+
+                <button id="home-website" class="home-option-btn">
+                    <div class="home-option-icon">
+                        <div class="devices-icon">
+                            <div class="device laptop"></div>
+                            <div class="device tablet"></div>
+                            <div class="device phone"></div>
+                        </div>
+                    </div>
+                    <h3 class="home-option-title">Visit Our Website</h3>
+                    <p class="home-option-desc">Discover more magic</p>
+                </button>
+            </div>
         </div>
 
         <!-- Spread Selection -->
-        <div id="spread-selection" class="spread-selection">
+        <div id="spread-selection" class="spread-selection hidden">
+            <h2 class="spread-title">Choose Your Reading</h2>
+
+            <!-- Question Prompt Section -->
+            <div class="spread-question-section">
+                <label for="reading-question" class="spread-question-label">What guidance do you seek?</label>
+                <textarea
+                    id="reading-question"
+                    class="spread-question-input"
+                    placeholder="Enter your question (optional)"
+                    rows="2"></textarea>
+            </div>
+
             <div class="button-group">
                 <button id="one-card-btn" class="spread-btn-img">
                     <img src="cards/images/wildmother_tarot_one.png" alt="One Card Spread">
@@ -34,6 +137,12 @@
 
         <!-- Reading Display -->
         <div id="reading-area" class="reading-area hidden">
+            <!-- Question Display -->
+            <div id="question-display" class="question-display hidden">
+                <h3>Your Question</h3>
+                <p id="question-text"></p>
+            </div>
+
             <div class="reading-container">
                 <div class="reading-column">
                     <h2>Your Reading</h2>
@@ -61,19 +170,11 @@
     <script src="auth.js"></script>
     <script src="script.js"></script>
     <script>
-        // Display logged-in user
+        // Display logged-in user in menu
         const user = getUserFromToken();
         if (user && user.email) {
-            document.getElementById('userEmail').textContent = user.email;
+            document.getElementById('menuUserEmail').textContent = user.email;
         }
-
-        // Logout handler
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            if (confirm('Are you sure you want to sign out?')) {
-                logout();
-                window.location.href = 'login.html';
-            }
-        });
     </script>
 </body>
 </html>
