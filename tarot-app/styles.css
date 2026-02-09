@@ -1,3 +1,28 @@
+/* ============================================
+   CUSTOM FONTS
+   ============================================ */
+
+@font-face {
+    font-family: 'Rebel';
+    src: url('fonts/Rebel.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Ashley Southine';
+    src: url('fonts/Ashley Southine.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Alchemist Serif';
+    src: url('fonts/Alchemist Serif Font.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -423,6 +448,7 @@ body {
     font-size: 2rem;
     margin-bottom: 10px;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    font-family: 'Ashley Southine', 'Georgia', serif;
 }
 
 .home-subtitle {
@@ -430,6 +456,7 @@ body {
     font-size: 1.2rem;
     font-style: italic;
     margin-bottom: 10px;
+    font-family: 'Alchemist Serif', 'Georgia', serif;
 }
 
 .home-main-title {
@@ -438,6 +465,7 @@ body {
     margin-top: 15px;
     text-shadow: 0 3px 15px rgba(212, 184, 115, 0.6);
     letter-spacing: 2px;
+    font-family: 'Rebel', 'Georgia', serif;
 }
 
 /* Home Options Grid */
@@ -494,6 +522,7 @@ body {
     color: #d4b873;
     font-size: 1.5rem;
     margin-bottom: 10px;
+    font-family: 'Alchemist Serif', 'Georgia', serif;
 }
 
 .home-option-desc {
