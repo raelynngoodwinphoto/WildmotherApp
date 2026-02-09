@@ -5,7 +5,7 @@
 
 // API Configuration
 const API_BASE_URL = 'https://ioslearningsandbox.azurewebsites.net';
-const TENANT_SLUG = 'wildmother-tarot';
+const TENANT_SLUG = 'blood-honey-collective';
 
 // ============================================
 // TOKEN MANAGEMENT
