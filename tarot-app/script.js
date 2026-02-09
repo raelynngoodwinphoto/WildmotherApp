@@ -1041,7 +1041,7 @@ menuJournal.addEventListener('click', () => {
 
 // Menu - Explore Website button
 menuExplore.addEventListener('click', () => {
-    const websiteUrl = 'https://www.bloodhoneycollective.com';
+    const websiteUrl = 'https://bloodandhoneycollective.com/';
     window.open(websiteUrl, '_blank');
     closeMenu();
 });
@@ -1067,7 +1067,7 @@ homeCardOfDay.addEventListener('click', () => {
 
 // Home Page - Visit Website button
 homeWebsite.addEventListener('click', () => {
-    const websiteUrl = 'https://www.bloodhoneycollective.com';
+    const websiteUrl = 'https://bloodandhoneycollective.com/';
     window.open(websiteUrl, '_blank');
 });
 
