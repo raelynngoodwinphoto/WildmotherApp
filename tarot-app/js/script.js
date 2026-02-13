@@ -1082,8 +1082,7 @@ logoutBtn.addEventListener('click', () => {
 // ============================================
 // JOURNAL SAVE FUNCTIONALITY
 // ============================================
-
-const API_BASE_URL = 'https://ioslearningsandbox.azurewebsites.net';
+// Note: API_BASE_URL is declared in auth.js
 
 function getAuthHeaders() {
     const token = localStorage.getItem('accessToken');

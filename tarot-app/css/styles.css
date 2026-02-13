@@ -4,21 +4,21 @@
 
 @font-face {
     font-family: 'Rebel';
-    src: url('fonts/Rebel.woff2') format('woff2');
+    src: url('../fonts/Rebel.woff2') format('woff2');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Ashley Southine';
-    src: url('fonts/Ashley Southine.ttf') format('truetype');
+    src: url('../fonts/Ashley Southine.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Alchemist Serif';
-    src: url('fonts/Alchemist Serif Font.ttf') format('truetype');
+    src: url('../fonts/Alchemist Serif Font.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
