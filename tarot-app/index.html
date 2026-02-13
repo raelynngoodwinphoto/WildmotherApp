@@ -153,6 +153,36 @@
         <div id="reset-container" class="reset-container hidden">
             <button id="reset-btn" class="reset-btn">New Reading</button>
         </div>
+
+        <!-- Journal Page -->
+        <div id="journal-page" class="journal-page hidden">
+            <button id="journal-back-btn" class="back-btn">← Back to Home</button>
+            <h2 class="journal-title">Your Journal</h2>
+
+            <div id="journal-loading" class="journal-loading hidden">
+                <p>Loading your entries...</p>
+            </div>
+
+            <div id="journal-entries-container" class="journal-entries-container"></div>
+
+            <div id="journal-empty" class="journal-empty hidden">
+                <p>No journal entries yet.</p>
+                <p class="journal-empty-subtitle">Complete a reading and save your reflections to start your journal.</p>
+            </div>
+
+            <div id="journal-login-prompt" class="journal-login-prompt hidden">
+                <p>Please sign in to view your journal.</p>
+                <button class="primary-btn" onclick="window.location.href='login.html'">Sign In</button>
+            </div>
+        </div>
+
+        <!-- Journal Entry Detail Modal -->
+        <div id="entry-detail-modal" class="entry-modal hidden">
+            <div class="entry-modal-content">
+                <button id="close-entry-modal" class="entry-modal-close">✕</button>
+                <div id="entry-detail-content"></div>
+            </div>
+        </div>
     </div>
 
     <script src="js/auth.js"></script>

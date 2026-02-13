@@ -1035,8 +1035,7 @@ menuHome.addEventListener('click', () => {
 // Menu - Journal button
 menuJournal.addEventListener('click', () => {
     closeMenu();
-    alert('Journal feature coming soon! This will allow you to save and review your past readings.');
-    // TODO: Implement journal page/feature
+    showJournalPage();
 });
 
 // Menu - Explore Website button
@@ -1053,8 +1052,7 @@ homeReadings.addEventListener('click', () => {
 
 // Home Page - Journal button
 homeJournal.addEventListener('click', () => {
-    alert('Journal feature coming soon! This will allow you to save and review your past readings.');
-    // TODO: Implement journal page/feature
+    showJournalPage();
 });
 
 // Home Page - Card of the Day button
@@ -1169,4 +1167,159 @@ async function saveToJournal() {
 const saveToJournalBtn = document.getElementById('save-to-journal-btn');
 if (saveToJournalBtn) {
     saveToJournalBtn.addEventListener('click', saveToJournal);
+}
+
+// ============================================
+// JOURNAL PAGE FUNCTIONALITY
+// ============================================
+
+function formatEntryDate(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit'
+    });
+}
+
+function showJournalPage() {
+    // Hide all other sections
+    homePage.classList.add('hidden');
+    spreadSelection.classList.add('hidden');
+    cardArea.classList.add('hidden');
+    readingArea.classList.add('hidden');
+    document.getElementById('reset-container').classList.add('hidden');
+
+    // Show journal page
+    const journalPage = document.getElementById('journal-page');
+    journalPage.classList.remove('hidden');
+
+    // Load entries
+    loadJournalEntries();
+}
+
+async function loadJournalEntries() {
+    const token = localStorage.getItem('accessToken');
+    const loadingEl = document.getElementById('journal-loading');
+    const containerEl = document.getElementById('journal-entries-container');
+    const emptyEl = document.getElementById('journal-empty');
+    const loginPromptEl = document.getElementById('journal-login-prompt');
+
+    // Hide all states
+    loadingEl.classList.add('hidden');
+    containerEl.innerHTML = '';
+    emptyEl.classList.add('hidden');
+    loginPromptEl.classList.add('hidden');
+
+    // Check if logged in
+    if (!token) {
+        loginPromptEl.classList.remove('hidden');
+        return;
+    }
+
+    // Show loading
+    loadingEl.classList.remove('hidden');
+
+    try {
+        const response = await fetch(API_BASE_URL + '/api/Journal?skip=0&take=50', {
+            headers: getAuthHeaders()
+        });
+
+        if (response.status === 401) {
+            loadingEl.classList.add('hidden');
+            loginPromptEl.classList.remove('hidden');
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error('Failed to load entries');
+        }
+
+        const entries = await response.json();
+        loadingEl.classList.add('hidden');
+
+        if (entries.length === 0) {
+            emptyEl.classList.remove('hidden');
+            return;
+        }
+
+        // Display entries
+        entries.forEach(entry => {
+            const entryCard = document.createElement('div');
+            entryCard.className = 'journal-entry-card';
+            entryCard.onclick = () => showEntryDetail(entry);
+
+            const preview = entry.content ?
+                (entry.content.length > 150 ? entry.content.substring(0, 150) + '...' : entry.content) :
+                'No reflections';
+
+            entryCard.innerHTML = `
+                <div class="journal-entry-header">
+                    <h3 class="journal-entry-title">${escapeHtml(entry.title)}</h3>
+                    <span class="journal-entry-date">${formatEntryDate(entry.createdAt)}</span>
+                </div>
+                <p class="journal-entry-preview">${escapeHtml(preview)}</p>
+            `;
+
+            containerEl.appendChild(entryCard);
+        });
+
+    } catch (error) {
+        console.error('Error loading journal entries:', error);
+        loadingEl.classList.add('hidden');
+        containerEl.innerHTML = '<p class="journal-error">Unable to load entries. Please try again.</p>';
+    }
+}
+
+function showEntryDetail(entry) {
+    const modal = document.getElementById('entry-detail-modal');
+    const content = document.getElementById('entry-detail-content');
+
+    content.innerHTML = `
+        <div class="entry-detail-header">
+            <h2 class="entry-detail-title">${escapeHtml(entry.title)}</h2>
+            <p class="entry-detail-date">${formatEntryDate(entry.createdAt)}</p>
+        </div>
+        <div class="entry-detail-body">
+            <p class="entry-detail-content">${escapeHtml(entry.content || 'No reflections')}</p>
+        </div>
+    `;
+
+    modal.classList.remove('hidden');
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Journal back button
+const journalBackBtn = document.getElementById('journal-back-btn');
+if (journalBackBtn) {
+    journalBackBtn.addEventListener('click', () => {
+        document.getElementById('journal-page').classList.add('hidden');
+        showHome();
+    });
+}
+
+// Close entry modal
+const closeEntryModal = document.getElementById('close-entry-modal');
+if (closeEntryModal) {
+    closeEntryModal.addEventListener('click', () => {
+        document.getElementById('entry-detail-modal').classList.add('hidden');
+    });
+}
+
+// Click outside modal to close
+const entryModal = document.getElementById('entry-detail-modal');
+if (entryModal) {
+    entryModal.addEventListener('click', (e) => {
+        if (e.target === entryModal) {
+            entryModal.classList.add('hidden');
+        }
+    });
 }
