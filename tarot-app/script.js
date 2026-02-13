@@ -751,9 +751,9 @@ const cardsData = {
       "name": "Single Card",
       "positions": ["Your Card"]
     },
-    "four-card": {
-      "name": "Four Card Spread",
-      "positions": ["Past", "Present", "Future", "Outcome"]
+    "three-card": {
+      "name": "Three Card Spread",
+      "positions": ["Past", "Present", "Future"]
     }
   }
 };
@@ -766,7 +766,7 @@ let selectedCards = [];
 const homePage = document.getElementById('home-page');
 const spreadSelection = document.getElementById('spread-selection');
 const oneCardBtn = document.getElementById('one-card-btn');
-const fourCardBtn = document.getElementById('four-card-btn');
+const threeCardBtn = document.getElementById('three-card-btn');
 const cardArea = document.getElementById('card-area');
 const cardsContainer = document.getElementById('cards-container');
 const positionLabels = document.getElementById('position-labels');
@@ -841,7 +841,7 @@ function flipCard(cardElement, index) {
 // Show card description
 function showCardDescription(index) {
     const card = selectedCards[index];
-    const spreadType = currentSpread === 1 ? 'one-card' : 'four-card';
+    const spreadType = currentSpread === 1 ? 'one-card' : 'three-card';
     const position = cardsData.spreads[spreadType].positions[index];
 
     const descriptionElement = document.createElement('div');
@@ -882,7 +882,7 @@ function showCardDescription(index) {
 // Setup spread
 function setupSpread(spreadType) {
     currentSpread = spreadType;
-    const spreadKey = spreadType === 1 ? 'one-card' : 'four-card';
+    const spreadKey = spreadType === 1 ? 'one-card' : 'three-card';
     const positions = cardsData.spreads[spreadKey].positions;
 
     // Select random cards
@@ -970,13 +970,13 @@ oneCardBtn.addEventListener('click', () => {
     setupSpread(1);
 });
 
-fourCardBtn.addEventListener('click', () => {
+threeCardBtn.addEventListener('click', () => {
     // Save question if provided
     const question = readingQuestion.value.trim();
     if (question) {
         localStorage.setItem('currentQuestion', question);
     }
-    setupSpread(4);
+    setupSpread(3);
 });
 
 resetBtn.addEventListener('click', resetReading);
