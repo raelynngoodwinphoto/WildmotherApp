@@ -967,7 +967,7 @@ oneCardBtn.addEventListener('click', () => {
     if (question) {
         localStorage.setItem('currentQuestion', question);
     }
-    setupSpread(1);
+    initiatePhysicalReading(1); // Replace setupSpread with new function
 });
 
 threeCardBtn.addEventListener('click', () => {
@@ -976,7 +976,7 @@ threeCardBtn.addEventListener('click', () => {
     if (question) {
         localStorage.setItem('currentQuestion', question);
     }
-    setupSpread(3);
+    initiatePhysicalReading(3); // Replace setupSpread with new function
 });
 
 resetBtn.addEventListener('click', resetReading);
@@ -1322,4 +1322,347 @@ if (entryModal) {
             entryModal.classList.add('hidden');
         }
     });
+}
+
+// ============================================
+// PHYSICAL DECK WORKFLOW
+// ============================================
+
+// Start physical deck flow
+function initiatePhysicalReading(cardCount) {
+    currentSpread = cardCount;
+    selectedCards = []; // Reset selections
+
+    // Hide spread selection
+    document.getElementById('spread-selection').classList.add('hidden');
+
+    // Show physical deck prompt
+    const physicalPrompt = document.getElementById('physical-deck-prompt');
+    document.getElementById('cards-to-pull').textContent = cardCount;
+    physicalPrompt.classList.remove('hidden');
+}
+
+// Show card picker interface with searchable positions
+function showCardPicker() {
+    // Hide physical deck prompt
+    document.getElementById('physical-deck-prompt').classList.add('hidden');
+
+    // Setup card picker positions
+    const pickerPositions = document.getElementById('card-picker-positions');
+    pickerPositions.innerHTML = '';
+
+    const positions = currentSpread === 1
+        ? ['Your Card']
+        : ['Past', 'Present', 'Future'];
+
+    positions.forEach((position, index) => {
+        const positionDiv = document.createElement('div');
+        positionDiv.className = 'card-picker-position';
+        positionDiv.innerHTML = `
+            <h3>${position}</h3>
+            <input
+                type="text"
+                class="card-search-input"
+                data-position="${index}"
+                placeholder="Search for card name..."
+                autocomplete="off"
+            />
+            <div class="card-suggestions" data-position="${index}"></div>
+            <div class="selected-card-display" data-position="${index}"></div>
+        `;
+        pickerPositions.appendChild(positionDiv);
+    });
+
+    // Show card picker
+    document.getElementById('card-picker').classList.remove('hidden');
+
+    // Attach search event listeners
+    attachCardSearchListeners();
+}
+
+// Attach autocomplete search to card inputs
+function attachCardSearchListeners() {
+    const searchInputs = document.querySelectorAll('.card-search-input');
+
+    searchInputs.forEach(input => {
+        input.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            const position = e.target.dataset.position;
+            const suggestionsDiv = document.querySelector(`.card-suggestions[data-position="${position}"]`);
+
+            if (searchTerm.length < 2) {
+                suggestionsDiv.innerHTML = '';
+                return;
+            }
+
+            // Filter cards by name match
+            const matches = cardsData.cards.filter(card =>
+                card.name.toLowerCase().includes(searchTerm)
+            );
+
+            // Display up to 8 matches
+            suggestionsDiv.innerHTML = matches.slice(0, 8).map(card => `
+                <div class="card-suggestion-item" data-card-id="${card.id}" data-position="${position}">
+                    ${card.name}
+                </div>
+            `).join('');
+
+            // Attach click listeners to suggestions
+            suggestionsDiv.querySelectorAll('.card-suggestion-item').forEach(item => {
+                item.addEventListener('click', () => selectCard(
+                    parseInt(item.dataset.cardId),
+                    parseInt(item.dataset.position)
+                ));
+            });
+        });
+
+        // Clear suggestions when clicking outside
+        input.addEventListener('blur', () => {
+            setTimeout(() => {
+                const suggestionsDiv = document.querySelector(`.card-suggestions[data-position="${input.dataset.position}"]`);
+                suggestionsDiv.innerHTML = '';
+            }, 200);
+        });
+    });
+}
+
+// Handle card selection for a position
+function selectCard(cardId, position) {
+    const card = cardsData.cards.find(c => c.id === cardId);
+    if (!card) return;
+
+    // Store selection
+    selectedCards[position] = card;
+
+    // Update UI - clear search input and show selected card
+    const input = document.querySelector(`.card-search-input[data-position="${position}"]`);
+    input.value = '';
+
+    const displayDiv = document.querySelector(`.selected-card-display[data-position="${position}"]`);
+    displayDiv.innerHTML = `
+        <div class="selected-card-chip">
+            ${card.name}
+            <button class="remove-card-btn" data-position="${position}">✕</button>
+        </div>
+    `;
+
+    // Attach remove button listener
+    displayDiv.querySelector('.remove-card-btn').addEventListener('click', () => {
+        selectedCards[position] = null;
+        displayDiv.innerHTML = '';
+        checkConfirmButtonState();
+    });
+
+    // Clear suggestions
+    const suggestionsDiv = document.querySelector(`.card-suggestions[data-position="${position}"]`);
+    suggestionsDiv.innerHTML = '';
+
+    // Check if all positions are filled
+    checkConfirmButtonState();
+}
+
+// Enable confirm button when all positions filled
+function checkConfirmButtonState() {
+    const requiredCount = currentSpread === 1 ? 1 : 3;
+    const filledCount = selectedCards.filter(c => c !== null && c !== undefined).length;
+
+    const confirmBtn = document.getElementById('confirm-cards');
+    confirmBtn.disabled = filledCount < requiredCount;
+}
+
+// Confirm selected cards and show reading
+function confirmCardSelection() {
+    if (selectedCards.filter(c => c).length < currentSpread) {
+        alert('Please select a card for each position.');
+        return;
+    }
+
+    // Hide card picker
+    document.getElementById('card-picker').classList.add('hidden');
+
+    // Show reading with selected cards
+    displayPhysicalReading();
+}
+
+// Display reading with user-selected cards
+function displayPhysicalReading() {
+    const readingArea = document.getElementById('reading-area');
+    const cardDescriptions = document.getElementById('card-descriptions');
+    const questionDisplay = document.getElementById('question-display');
+    const questionText = document.getElementById('question-text');
+
+    // Show question if exists
+    const currentQuestion = localStorage.getItem('currentQuestion');
+    if (currentQuestion) {
+        questionText.textContent = currentQuestion;
+        questionDisplay.classList.remove('hidden');
+    } else {
+        questionDisplay.classList.add('hidden');
+    }
+
+    // Clear previous reading
+    cardDescriptions.innerHTML = '';
+
+    // Get position labels
+    const positions = currentSpread === 1
+        ? ['Your Card']
+        : ['Past', 'Present', 'Future'];
+
+    // Display each selected card
+    selectedCards.forEach((card, index) => {
+        if (!card) return;
+
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'card-description';
+        cardDiv.innerHTML = `
+            <div class="card-description-header">
+                <h3>${positions[index]}</h3>
+                <h2>${card.name}</h2>
+                ${card.subtitle ? `<p class="card-subtitle">${card.subtitle}</p>` : ''}
+            </div>
+            <div class="card-description-content">
+                <div class="card-keywords">
+                    ${card.keywords.map(kw => `<span class="keyword">${kw}</span>`).join(' ')}
+                </div>
+                <p class="card-meaning">${card.description || card.upright}</p>
+            </div>
+        `;
+        cardDescriptions.appendChild(cardDiv);
+    });
+
+    // Show reading area
+    readingArea.classList.remove('hidden');
+
+    // Clear reflections textarea
+    document.getElementById('reflections-textarea').value = '';
+
+    // Show reset button
+    document.getElementById('reset-container').classList.remove('hidden');
+}
+
+// ============================================
+// PHYSICAL DECK EVENT LISTENERS
+// ============================================
+
+// Physical deck flow: "I've Pulled My Cards" button
+const continueToPickerBtn = document.getElementById('continue-to-picker');
+if (continueToPickerBtn) {
+    continueToPickerBtn.addEventListener('click', showCardPicker);
+}
+
+// Physical deck flow: "Confirm Cards" button
+const confirmCardsBtn = document.getElementById('confirm-cards');
+if (confirmCardsBtn) {
+    confirmCardsBtn.addEventListener('click', confirmCardSelection);
+}
+
+// GPT Chat: Open chat button
+const chatWithGptBtn = document.getElementById('chat-with-gpt-btn');
+if (chatWithGptBtn) {
+    chatWithGptBtn.addEventListener('click', () => {
+        document.getElementById('gpt-chat-container').classList.remove('hidden');
+    });
+}
+
+// GPT Chat: Close chat button
+const closeGptChatBtn = document.getElementById('close-gpt-chat');
+if (closeGptChatBtn) {
+    closeGptChatBtn.addEventListener('click', () => {
+        document.getElementById('gpt-chat-container').classList.add('hidden');
+    });
+}
+
+// GPT Chat: Send message button
+const sendGptMessageBtn = document.getElementById('send-gpt-message');
+const gptInput = document.getElementById('gpt-input');
+if (sendGptMessageBtn && gptInput) {
+    sendGptMessageBtn.addEventListener('click', sendGptMessage);
+
+    // Allow Enter key to send (Shift+Enter for new line)
+    gptInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendGptMessage();
+        }
+    });
+}
+
+// ============================================
+// GPT CHAT FUNCTIONALITY
+// ============================================
+
+// Send message to GPT
+async function sendGptMessage() {
+    const input = document.getElementById('gpt-input');
+    const message = input.value.trim();
+
+    if (!message) return;
+
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+        alert('Please sign in to use the Card Companion chat.');
+        return;
+    }
+
+    // Disable input while sending
+    input.disabled = true;
+    document.getElementById('send-gpt-message').disabled = true;
+
+    // Display user message
+    appendChatMessage('user', message);
+    input.value = '';
+
+    try {
+        // Prepare context: selected cards + user question
+        const cardContext = selectedCards.map((card, index) => {
+            const positions = currentSpread === 1 ? ['Your Card'] : ['Past', 'Present', 'Future'];
+            return `${positions[index]}: ${card.name} - ${card.description || card.upright}`;
+        }).join('\n\n');
+
+        const currentQuestion = localStorage.getItem('currentQuestion') || 'No specific question';
+
+        // Call GPT API (endpoint TBD - using placeholder for now)
+        const response = await fetch(API_BASE_URL + '/api/CardInsight', {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({
+                question: currentQuestion,
+                cards: cardContext,
+                userMessage: message
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Display GPT response
+        appendChatMessage('assistant', data.response || data.message);
+
+    } catch (error) {
+        console.error('GPT chat error:', error);
+        appendChatMessage('assistant', 'Sorry, I encountered an error. Please try again.');
+    } finally {
+        input.disabled = false;
+        document.getElementById('send-gpt-message').disabled = false;
+        input.focus();
+    }
+}
+
+// Append message to chat conversation
+function appendChatMessage(role, text) {
+    const conversation = document.getElementById('gpt-conversation');
+
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `gpt-message gpt-message-${role}`;
+    messageDiv.innerHTML = `
+        <div class="gpt-message-content">${text}</div>
+    `;
+
+    conversation.appendChild(messageDiv);
+
+    // Scroll to bottom
+    conversation.scrollTop = conversation.scrollHeight;
 }
