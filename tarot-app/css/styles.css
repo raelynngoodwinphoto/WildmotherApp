@@ -351,6 +351,67 @@ body {
     opacity: 0.6;
 }
 
+/* Save to Journal Button */
+.save-journal-btn {
+    width: 100%;
+    margin-top: 15px;
+    background: linear-gradient(145deg, #2d5f6d, #1a4a55);
+    border: 2px solid #d4b873;
+    color: #e8dcc0;
+    padding: 12px 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.save-journal-btn:hover {
+    background: linear-gradient(145deg, #1a4a55, #2d5f6d);
+    border-color: #c9a961;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(212, 184, 115, 0.4);
+}
+
+.save-journal-btn:active {
+    transform: translateY(0);
+}
+
+.save-journal-btn:disabled {
+    background: #555;
+    border-color: #777;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Save Message */
+.save-message {
+    margin-top: 10px;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.save-message.success {
+    background: rgba(76, 175, 80, 0.2);
+    border: 1px solid #4caf50;
+    color: #81c784;
+}
+
+.save-message.error {
+    background: rgba(244, 67, 54, 0.2);
+    border: 1px solid #f44336;
+    color: #e57373;
+}
+
+.save-message.hidden {
+    display: none;
+}
+
 /* Reset Button */
 .reset-container {
     text-align: center;

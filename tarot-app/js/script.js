@@ -1078,3 +1078,96 @@ logoutBtn.addEventListener('click', () => {
         window.location.href = 'login.html';
     }
 });
+
+// ============================================
+// JOURNAL SAVE FUNCTIONALITY
+// ============================================
+
+const API_BASE_URL = 'https://ioslearningsandbox.azurewebsites.net';
+
+function getAuthHeaders() {
+    const token = localStorage.getItem('accessToken');
+    return {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+    };
+}
+
+function showSaveMessage(text, type) {
+    const messageEl = document.getElementById('save-message');
+    messageEl.textContent = text;
+    messageEl.className = 'save-message ' + type;
+    messageEl.classList.remove('hidden');
+
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+        messageEl.classList.add('hidden');
+    }, 3000);
+}
+
+async function saveToJournal() {
+    const token = localStorage.getItem('accessToken');
+
+    if (!token) {
+        if (confirm('You need to be signed in to save to your journal. Would you like to sign in now?')) {
+            window.location.href = 'login.html';
+        }
+        return;
+    }
+
+    const question = localStorage.getItem('currentQuestion') || 'Tarot Reading';
+    const reflections = document.getElementById('reflections-textarea').value.trim();
+
+    if (!reflections) {
+        showSaveMessage('Please write some reflections before saving.', 'error');
+        return;
+    }
+
+    const saveBtn = document.getElementById('save-to-journal-btn');
+    const originalText = saveBtn.textContent;
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving...';
+
+    try {
+        const response = await fetch(API_BASE_URL + '/api/Journal', {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({
+                title: question,
+                content: reflections
+            })
+        });
+
+        if (response.status === 401) {
+            showSaveMessage('Session expired. Please sign in again.', 'error');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 2000);
+            return;
+        }
+
+        if (!response.ok) {
+            const data = await response.json();
+            const errorMsg = data.errors
+                ? data.errors.map(e => e.message).join(', ')
+                : 'Could not save to journal.';
+            showSaveMessage(errorMsg, 'error');
+            return;
+        }
+
+        showSaveMessage('✓ Saved to your journal!', 'success');
+
+    } catch (error) {
+        console.error('Error saving to journal:', error);
+        showSaveMessage('Unable to save. Please try again.', 'error');
+    } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = originalText;
+    }
+}
+
+// Save to Journal button
+const saveToJournalBtn = document.getElementById('save-to-journal-btn');
+if (saveToJournalBtn) {
+    saveToJournalBtn.addEventListener('click', saveToJournal);
+}
