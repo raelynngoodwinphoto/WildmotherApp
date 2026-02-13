@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood & Honey Collective - Journal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 640px;
+            margin-top: 20px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #d4a853;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .message {
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #d4a853;
+            box-shadow: 0 0 0 3px rgba(212, 168, 83, 0.2);
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: #aaa;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #d4a853 0%, #c4943f 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(212, 168, 83, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 13px;
+            border-radius: 8px;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 10px 20px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 10px 20px rgba(108, 117, 125, 0.3);
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-row h2 {
+            color: #333;
+            font-size: 20px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Entry form */
+        #entryForm {
+            display: none;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        #entryForm .form-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Entry list */
+        .entry-list {
+            list-style: none;
+        }
+
+        .entry-item {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 12px;
+            transition: box-shadow 0.2s;
+        }
+
+        .entry-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .entry-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .entry-date {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+        .entry-content {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            margin-bottom: 12px;
+        }
+
+        .entry-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .empty-state small {
+            font-size: 13px;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .login-link a {
+            color: #d4a853;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .nav-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+            color: #888;
+        }
+
+        .nav-row a {
+            color: #d4a853;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-row a:hover {
+            text-decoration: underline;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>Blood & Honey Collective</h1>
+            <p>Your Journal</p>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <!-- Not logged in -->
+        <div id="loginPrompt" style="display:none;">
+            <div class="empty-state">
+                <p>Please sign in to access your journal.</p>
+            </div>
+            <p class="login-link">
+                <a href="login.html">Sign In</a> or <a href="index.html">Create an Account</a>
+            </p>
+        </div>
+
+        <!-- Logged in -->
+        <div id="journalApp" style="display:none;">
+            <div class="nav-row">
+                <span id="userEmail"></span>
+                <a href="#" onclick="logout(); return false;">Sign Out</a>
+            </div>
+
+            <div class="header-row">
+                <h2 id="entriesHeading">Entries</h2>
+                <button class="btn btn-small" id="newEntryBtn" onclick="showForm()">New Entry</button>
+            </div>
+
+            <!-- Create / Edit form -->
+            <div id="entryForm">
+                <input type="hidden" id="editId">
+                <div class="form-group">
+                    <label for="entryTitle">Title</label>
+                    <input type="text" id="entryTitle" placeholder="Entry title" required>
+                </div>
+                <div class="form-group">
+                    <label for="entryContent">Content</label>
+                    <textarea id="entryContent" placeholder="Write your thoughts..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-small" id="saveBtn" onclick="saveEntry()">Save</button>
+                    <button class="btn btn-small btn-secondary" onclick="hideForm()">Cancel</button>
+                </div>
+            </div>
+
+            <!-- Entries list -->
+            <div id="loading" class="loading">Loading entries...</div>
+            <ul id="entryList" class="entry-list"></ul>
+            <div id="emptyState" class="empty-state" style="display:none;">
+                <p>No journal entries yet.</p>
+                <small>Tap "New Entry" to write your first one.</small>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://ioslearningsandbox.azurewebsites.net';
+
+        function getToken() {
+            return localStorage.getItem('accessToken');
+        }
+
+        function authHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + getToken()
+            };
+        }
+
+        function showMessage(text, type) {
+            const el = document.getElementById('message');
+            el.textContent = text;
+            el.className = 'message ' + type;
+        }
+
+        function clearMessage() {
+            const el = document.getElementById('message');
+            el.className = 'message';
+            el.textContent = '';
+        }
+
+        function formatDate(dateStr) {
+            const d = new Date(dateStr);
+            return d.toLocaleDateString(undefined, {
+                year: 'numeric', month: 'short', day: 'numeric',
+                hour: 'numeric', minute: '2-digit'
+            });
+        }
+
+        // --- Auth ---
+
+        function checkAuth() {
+            const token = getToken();
+            if (!token) {
+                document.getElementById('loginPrompt').style.display = 'block';
+                document.getElementById('journalApp').style.display = 'none';
+                return false;
+            }
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const email = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
+                document.getElementById('userEmail').textContent = email;
+            } catch (e) {
+                logout();
+                return false;
+            }
+            document.getElementById('loginPrompt').style.display = 'none';
+            document.getElementById('journalApp').style.display = 'block';
+            return true;
+        }
+
+        function logout() {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            document.getElementById('loginPrompt').style.display = 'block';
+            document.getElementById('journalApp').style.display = 'none';
+            showMessage('You have been signed out.', 'success');
+        }
+
+        // --- Form ---
+
+        function showForm(id, title, content) {
+            document.getElementById('editId').value = id || '';
+            document.getElementById('entryTitle').value = title || '';
+            document.getElementById('entryContent').value = content || '';
+            document.getElementById('entryForm').style.display = 'block';
+            document.getElementById('saveBtn').textContent = id ? 'Update' : 'Save';
+            document.getElementById('newEntryBtn').style.display = 'none';
+            document.getElementById('entryTitle').focus();
+        }
+
+        function hideForm() {
+            document.getElementById('entryForm').style.display = 'none';
+            document.getElementById('newEntryBtn').style.display = 'inline-block';
+        }
+
+        // --- API calls ---
+
+        async function loadEntries() {
+            const listEl = document.getElementById('entryList');
+            const loadingEl = document.getElementById('loading');
+            const emptyEl = document.getElementById('emptyState');
+
+            loadingEl.style.display = 'block';
+            listEl.innerHTML = '';
+            emptyEl.style.display = 'none';
+
+            try {
+                const res = await fetch(API_BASE_URL + '/api/Journal?skip=0&take=50', {
+                    headers: authHeaders()
+                });
+
+                if (res.status === 401) {
+                    logout();
+                    showMessage('Session expired. Please sign in again.', 'error');
+                    return;
+                }
+
+                const entries = await res.json();
+                loadingEl.style.display = 'none';
+
+                if (entries.length === 0) {
+                    emptyEl.style.display = 'block';
+                    return;
+                }
+
+                entries.forEach(entry => {
+                    const li = document.createElement('li');
+                    li.className = 'entry-item';
+                    li.id = 'entry-' + entry.id;
+                    li.innerHTML =
+                        '<div class="entry-title">' + escapeHtml(entry.title) + '</div>' +
+                        '<div class="entry-date">' + formatDate(entry.createdAt) + '</div>' +
+                        '<div class="entry-content">' + escapeHtml(entry.content || '') + '</div>' +
+                        '<div class="entry-actions">' +
+                            '<button class="btn btn-small btn-secondary" onclick="editEntry(' + entry.id + ')">Edit</button>' +
+                            '<button class="btn btn-small btn-danger" onclick="deleteEntry(' + entry.id + ')">Delete</button>' +
+                        '</div>';
+                    listEl.appendChild(li);
+                });
+            } catch (err) {
+                loadingEl.style.display = 'none';
+                showMessage('Unable to load entries. Please try again.', 'error');
+            }
+        }
+
+        async function saveEntry() {
+            const id = document.getElementById('editId').value;
+            const title = document.getElementById('entryTitle').value.trim();
+            const content = document.getElementById('entryContent').value;
+
+            if (!title) {
+                showMessage('Title is required.', 'error');
+                return;
+            }
+
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+            clearMessage();
+
+            try {
+                const url = id
+                    ? API_BASE_URL + '/api/Journal/' + id
+                    : API_BASE_URL + '/api/Journal';
+
+                const res = await fetch(url, {
+                    method: id ? 'PUT' : 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ title, content })
+                });
+
+                if (res.status === 401) {
+                    logout();
+                    showMessage('Session expired. Please sign in again.', 'error');
+                    return;
+                }
+
+                if (!res.ok) {
+                    const data = await res.json();
+                    const msg = data.errors
+                        ? data.errors.map(e => e.message).join(', ')
+                        : 'Could not save entry.';
+                    showMessage(msg, 'error');
+                    return;
+                }
+
+                hideForm();
+                showMessage(id ? 'Entry updated.' : 'Entry created.', 'success');
+                await loadEntries();
+            } catch (err) {
+                showMessage('Unable to save. Please try again.', 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = id ? 'Update' : 'Save';
+            }
+        }
+
+        function editEntry(id) {
+            const item = document.getElementById('entry-' + id);
+            const title = item.querySelector('.entry-title').textContent;
+            const content = item.querySelector('.entry-content').textContent;
+            showForm(id, title, content);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function deleteEntry(id) {
+            if (!confirm('Delete this entry?')) return;
+
+            clearMessage();
+
+            try {
+                const res = await fetch(API_BASE_URL + '/api/Journal/' + id, {
+                    method: 'DELETE',
+                    headers: authHeaders()
+                });
+
+                if (res.status === 401) {
+                    logout();
+                    showMessage('Session expired. Please sign in again.', 'error');
+                    return;
+                }
+
+                if (res.status === 204 || res.ok) {
+                    showMessage('Entry deleted.', 'success');
+                    await loadEntries();
+                } else {
+                    showMessage('Could not delete entry.', 'error');
+                }
+            } catch (err) {
+                showMessage('Unable to delete. Please try again.', 'error');
+            }
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // --- Init ---
+        if (checkAuth()) {
+            loadEntries();
+        }
+    </script>
+</body>
+</html>
