@@ -1462,3 +1462,369 @@ body {
         font-size: 1.5em;
     }
 }
+
+/* ========================
+   Physical Deck Prompt
+   ======================== */
+.physical-deck-prompt {
+    padding: 60px 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.physical-deck-prompt h2 {
+    font-family: 'Rebel', serif;
+    font-size: 2.5rem;
+    color: #d4b873;
+    margin-bottom: 30px;
+}
+
+.prompt-instruction {
+    font-size: 1.3rem;
+    color: #e8e8e8;
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.prompt-instruction span {
+    color: #d4b873;
+    font-weight: bold;
+}
+
+.prompt-subtext {
+    font-size: 1rem;
+    color: #b0b0b0;
+    font-style: italic;
+    margin-bottom: 40px;
+}
+
+.primary-btn {
+    background: linear-gradient(145deg, #2d5f6d, #1a4a55);
+    border: 2px solid #d4b873;
+    color: #e8dcc0;
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    font-family: 'Georgia', serif;
+}
+
+.primary-btn:hover {
+    background: linear-gradient(145deg, #1a4a55, #2d5f6d);
+    border-color: #c9a961;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(212, 184, 115, 0.4);
+}
+
+.primary-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ========================
+   Card Picker
+   ======================== */
+.card-picker {
+    padding: 40px 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.card-picker h2 {
+    font-family: 'Rebel', serif;
+    font-size: 2rem;
+    color: #d4b873;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+#card-picker-positions {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.card-picker-position {
+    background: rgba(26, 74, 85, 0.3);
+    border: 2px solid #2d5f6d;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.card-picker-position h3 {
+    font-family: 'Rebel', serif;
+    font-size: 1.5rem;
+    color: #d4b873;
+    margin-bottom: 15px;
+}
+
+.card-search-input {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 1rem;
+    background: rgba(13, 21, 32, 0.6);
+    border: 2px solid #2d5f6d;
+    border-radius: 8px;
+    color: #e8e8e8;
+    font-family: 'Alchemist Serif', serif;
+    transition: border-color 0.3s ease;
+}
+
+.card-search-input:focus {
+    outline: none;
+    border-color: #d4b873;
+}
+
+.card-search-input::placeholder {
+    color: #7a7a7a;
+}
+
+.card-suggestions {
+    position: relative;
+    margin-top: 10px;
+}
+
+.card-suggestion-item {
+    padding: 12px 15px;
+    background: rgba(13, 21, 32, 0.8);
+    border: 1px solid #2d5f6d;
+    border-radius: 6px;
+    margin-bottom: 5px;
+    color: #e8e8e8;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.card-suggestion-item:hover {
+    background: rgba(26, 74, 85, 0.6);
+    border-color: #d4b873;
+    transform: translateX(5px);
+}
+
+.selected-card-display {
+    margin-top: 15px;
+}
+
+.selected-card-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    background: linear-gradient(135deg, #1a4a55, #2d5f6d);
+    border: 2px solid #d4b873;
+    border-radius: 20px;
+    color: #e8e8e8;
+    font-size: 1rem;
+}
+
+.remove-card-btn {
+    background: transparent;
+    border: none;
+    color: #d4b873;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.remove-card-btn:hover {
+    transform: scale(1.2);
+    color: #ff6b6b;
+}
+
+#confirm-cards {
+    display: block;
+    margin: 0 auto;
+}
+
+#confirm-cards:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ========================
+   GPT Chat Interface
+   ======================== */
+.chat-gpt-btn {
+    width: 100%;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #4a1a55, #5f2d6d);
+    border: 2px solid #b873d4;
+    border-radius: 8px;
+    color: #e8e8e8;
+    font-size: 1rem;
+    font-family: 'Rebel', serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 15px;
+}
+
+.chat-gpt-btn:hover {
+    background: linear-gradient(135deg, #5f2d6d, #7a3d8d);
+    border-color: #d4b873;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(212, 184, 115, 0.3);
+}
+
+.gpt-chat-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 400px;
+    max-height: 600px;
+    background: linear-gradient(135deg, #0d1520, #1a2838);
+    border: 2px solid #2d5f6d;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+}
+
+.gpt-chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: rgba(26, 74, 85, 0.4);
+    border-bottom: 2px solid #2d5f6d;
+    border-radius: 10px 10px 0 0;
+}
+
+.gpt-chat-header h3 {
+    font-family: 'Rebel', serif;
+    font-size: 1.3rem;
+    color: #d4b873;
+    margin: 0;
+}
+
+.close-gpt-btn {
+    background: transparent;
+    border: none;
+    color: #d4b873;
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.close-gpt-btn:hover {
+    transform: scale(1.2);
+    color: #ff6b6b;
+}
+
+.gpt-conversation {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-height: 400px;
+}
+
+.gpt-message {
+    padding: 12px 15px;
+    border-radius: 12px;
+    max-width: 85%;
+    word-wrap: break-word;
+}
+
+.gpt-message-user {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #1a4a55, #2d5f6d);
+    border: 1px solid #2d5f6d;
+    color: #e8e8e8;
+}
+
+.gpt-message-assistant {
+    align-self: flex-start;
+    background: rgba(26, 74, 85, 0.2);
+    border: 1px solid #2d5f6d;
+    color: #e8e8e8;
+}
+
+.gpt-message-content {
+    line-height: 1.5;
+}
+
+.gpt-input-area {
+    display: flex;
+    gap: 10px;
+    padding: 15px;
+    background: rgba(13, 21, 32, 0.6);
+    border-top: 2px solid #2d5f6d;
+    border-radius: 0 0 10px 10px;
+}
+
+#gpt-input {
+    flex: 1;
+    padding: 10px;
+    background: rgba(26, 74, 85, 0.3);
+    border: 2px solid #2d5f6d;
+    border-radius: 8px;
+    color: #e8e8e8;
+    font-family: 'Alchemist Serif', serif;
+    font-size: 0.95rem;
+    resize: none;
+    transition: border-color 0.3s ease;
+}
+
+#gpt-input:focus {
+    outline: none;
+    border-color: #d4b873;
+}
+
+.send-gpt-btn {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #1a4a55, #2d5f6d);
+    border: 2px solid #d4b873;
+    border-radius: 8px;
+    color: #d4b873;
+    font-family: 'Rebel', serif;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.send-gpt-btn:hover {
+    background: linear-gradient(135deg, #2d5f6d, #3d7f8d);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(212, 184, 115, 0.3);
+}
+
+.send-gpt-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Responsive: Mobile */
+@media (max-width: 768px) {
+    .gpt-chat-container {
+        bottom: 0;
+        right: 0;
+        left: 0;
+        width: 100%;
+        max-height: 70vh;
+        border-radius: 12px 12px 0 0;
+    }
+
+    #card-picker-positions {
+        gap: 20px;
+    }
+}
