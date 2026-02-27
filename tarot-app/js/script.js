@@ -784,6 +784,13 @@ const homeJournal = document.getElementById('home-journal');
 const homeCardOfDay = document.getElementById('home-card-of-day');
 const homeWebsite = document.getElementById('home-website');
 
+// ==============================================
+// DIGITAL CARD FUNCTIONS (Legacy)
+// ==============================================
+// These functions are only used for the optional
+// digital fallback. Primary flow uses physical deck.
+// ==============================================
+
 // Shuffle array (Fisher-Yates algorithm)
 function shuffleArray(array) {
     const shuffled = [...array];
@@ -1057,10 +1064,13 @@ homeJournal.addEventListener('click', () => {
 
 // Home Page - Card of the Day button
 homeCardOfDay.addEventListener('click', () => {
-    // Automatically start a one-card reading
+    // Automatically start a one-card physical reading
     homePage.classList.add('hidden');
-    cardArea.classList.remove('hidden');
-    setupSpread(1);
+    showSpreadSelection();
+    // Auto-initiate physical one-card reading
+    setTimeout(() => {
+        initiatePhysicalReading(1);
+    }, 100);
 });
 
 // Home Page - Visit Website button
@@ -1665,4 +1675,22 @@ function appendChatMessage(role, text) {
 
     // Scroll to bottom
     conversation.scrollTop = conversation.scrollHeight;
+}
+
+// ============================================
+// DIGITAL FALLBACK OPTION (Accessibility)
+// ============================================
+// Optional digital fallback for users without their physical deck
+const useDigitalBtn = document.getElementById('use-digital-cards');
+if (useDigitalBtn) {
+    useDigitalBtn.addEventListener('click', () => {
+        const confirmMsg = 'This will use digital cards instead of your physical deck. The physical deck experience is recommended. Continue anyway?';
+        if (confirm(confirmMsg)) {
+            // Hide physical prompt
+            document.getElementById('physical-deck-prompt').classList.add('hidden');
+            // Show card area and use old digital flow
+            cardArea.classList.remove('hidden');
+            setupSpread(currentSpread);
+        }
+    });
 }

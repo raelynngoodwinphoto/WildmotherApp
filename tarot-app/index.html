@@ -62,7 +62,7 @@
                         <img src="images/ReadingsButton.png" alt="Ask The Cards" class="icon-image">
                     </div>
                     <h3 class="home-option-title">Ask The Cards</h3>
-                    <p class="home-option-desc">Ask a question. Pull a card. Receive insight.</p>
+                    <p class="home-option-desc">Pull from your physical deck and explore their wisdom.</p>
                 </button>
 
                 <button id="home-journal" class="home-option-btn">
@@ -78,7 +78,7 @@
                         <img src="images/CardOfTheDayButton.png" alt="Daily Insight" class="icon-image">
                     </div>
                     <h3 class="home-option-title">Daily Insight</h3>
-                    <p class="home-option-desc">No question needed. Just receive.</p>
+                    <p class="home-option-desc">Pull a single card for guidance on your day ahead.</p>
                 </button>
 
                 <button id="home-website" class="home-option-btn">
@@ -115,7 +115,37 @@
             </div>
         </div>
 
-        <!-- Card Display Area -->
+        <!-- Physical Deck Prompt -->
+        <div id="physical-deck-prompt" class="physical-deck-prompt hidden">
+            <h2>Time to Pull Your Cards</h2>
+            <p class="prompt-instruction">
+                Take your Wild Mother deck in your hands. Shuffle while holding your question in your heart.
+            </p>
+            <p class="prompt-subtext">
+                When you feel ready, pull <span id="cards-to-pull">1</span> card(s) and place them face-up before you.
+            </p>
+            <p class="prompt-guidance">
+                There's no rush. Trust your intuition. The cards that call to you are meant for you in this moment.
+            </p>
+            <button id="continue-to-picker" class="primary-btn">I've Pulled My Cards</button>
+            <div class="digital-fallback">
+                <button id="use-digital-cards" class="subtle-link">
+                    Don't have your deck? Use digital cards instead
+                </button>
+            </div>
+        </div>
+
+        <!-- Card Picker -->
+        <div id="card-picker" class="card-picker hidden">
+            <h2>Tell Us Which Cards You Pulled</h2>
+            <p class="picker-instruction">
+                Look at your physical cards and search for them below. Not sure of the exact name? Start typing and we'll help you find it.
+            </p>
+            <div id="card-picker-positions"></div>
+            <button id="confirm-cards" class="primary-btn" disabled>Continue to Your Reading</button>
+        </div>
+
+        <!-- Card Display Area (keep for backwards compatibility but hide) -->
         <div id="card-area" class="card-area hidden">
             <div id="position-labels" class="position-labels"></div>
             <div id="cards-container" class="cards-container"></div>
@@ -144,7 +174,21 @@
                         placeholder="What thoughts, feelings, or insights does this reading bring up for you? Take a moment to reflect..."
                         rows="6"></textarea>
                     <button id="save-to-journal-btn" class="save-journal-btn">Save to Journal</button>
+                    <button id="chat-with-gpt-btn" class="chat-gpt-btn">Chat with Guide ✨</button>
                     <div id="save-message" class="save-message hidden"></div>
+
+                    <!-- GPT Chat Interface -->
+                    <div id="gpt-chat-container" class="gpt-chat-container hidden">
+                        <div class="gpt-chat-header">
+                            <h3>Card Companion</h3>
+                            <button id="close-gpt-chat" class="close-gpt-btn">✕</button>
+                        </div>
+                        <div id="gpt-conversation" class="gpt-conversation"></div>
+                        <div class="gpt-input-area">
+                            <textarea id="gpt-input" placeholder="Ask about your cards or request a reflection prompt..." rows="2"></textarea>
+                            <button id="send-gpt-message" class="send-gpt-btn">Send</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
