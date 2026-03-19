@@ -762,6 +762,42 @@ const cardsData = {
 let currentSpread = null;
 let selectedCards = [];
 let cardOrientations = []; // 'upright' or 'reversed' per card index
+let currentScreen = 'home'; // tracks active screen for back navigation
+
+// Back navigation map
+const backMap = {
+    question: 'home',
+    shuffle:  'question',
+    picker:   'shuffle',
+    reading:  'home',
+    library:  'home',
+    journal:  'home',
+};
+
+function setScreen(name) {
+    currentScreen = name;
+    const btn = document.getElementById('home-btn');
+    if (name === 'home') {
+        btn.classList.add('hidden');
+    } else {
+        btn.classList.remove('hidden');
+        btn.textContent = backMap[name] === 'home' ? '🏠 Home' : '← Back';
+    }
+}
+
+function goBack() {
+    const dest = backMap[currentScreen] || 'home';
+    if (dest === 'home') {
+        showHome();
+    } else if (dest === 'question') {
+        showSpreadSelection();
+    } else if (dest === 'shuffle') {
+        // Restore the shuffle screen without resetting the question
+        spreadSelection.classList.add('hidden');
+        document.getElementById('physical-deck-prompt').classList.remove('hidden');
+        setScreen('shuffle');
+    }
+}
 
 // DOM elements
 const homePage = document.getElementById('home-page');
@@ -942,6 +978,7 @@ function showHome() {
     readingArea.classList.add('hidden');
     resetContainer.classList.add('hidden');
     questionDisplay.classList.add('hidden');
+    setScreen('home');
 }
 
 function showSpreadSelection(cardCount = 1) {
@@ -957,6 +994,7 @@ function showSpreadSelection(cardCount = 1) {
     selectedCards = [];
     // Clear previous question
     document.getElementById('reading-question').value = '';
+    setScreen('question');
 }
 
 // Reset reading
@@ -1021,7 +1059,7 @@ resetBtn.addEventListener('click', resetReading);
 
 const readingQuestion = document.getElementById('reading-question');
 
-document.getElementById('home-btn').addEventListener('click', showHome);
+document.getElementById('home-btn').addEventListener('click', goBack);
 
 document.getElementById('logout-btn').addEventListener('click', () => {
     if (confirm('Are you sure you want to sign out?')) {
@@ -1071,6 +1109,7 @@ if (holdQuestionBtn) {
         }
         spreadSelection.classList.add('hidden');
         document.getElementById('physical-deck-prompt').classList.remove('hidden');
+        setScreen('shuffle');
     });
 }
 
@@ -1294,6 +1333,7 @@ function showJournalPage() {
     // Show journal page
     const journalPage = document.getElementById('journal-page');
     journalPage.classList.remove('hidden');
+    setScreen('journal');
 
     // Reset calendar to current month and render empty shell while entries load
     calendarYear = new Date().getFullYear();
@@ -1558,6 +1598,7 @@ function showCardPicker() {
 
     // Show card picker
     document.getElementById('card-picker').classList.remove('hidden');
+    setScreen('picker');
 }
 
 // Add a card picker slot to the picker
@@ -1812,6 +1853,7 @@ function showCardImagesDisplay() {
 
     // Show reset button
     document.getElementById('reset-container').classList.remove('hidden');
+    setScreen('reading');
 }
 
 // ============================================
@@ -1846,6 +1888,7 @@ function showCardLibrary() {
     }
 
     libraryEl.classList.remove('hidden');
+    setScreen('library');
 }
 
 function showCardDetail(card) {
