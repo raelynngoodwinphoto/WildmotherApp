@@ -35,6 +35,22 @@ body {
 }
 
 /* ============================================
+   BRAND / LOGO
+   ============================================ */
+
+.auth-brand {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.auth-logo {
+    max-width: 180px;
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+}
+
+/* ============================================
    LOGO / HEADER
    ============================================ */
 
@@ -189,6 +205,65 @@ input::placeholder {
     font-size: 12px;
     color: rgba(232, 220, 192, 0.7);
     margin-top: 6px;
+}
+
+/* ============================================
+   CHECKBOX
+   ============================================ */
+
+.checkbox-group {
+    margin-bottom: 24px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    display: none;
+}
+
+.checkbox-custom {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #7cb8d4;
+    border-radius: 4px;
+    background: rgba(13, 21, 32, 0.6);
+    transition: border-color 0.3s, background 0.3s;
+    margin-top: 2px;
+    position: relative;
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkbox-custom {
+    background: #c9a961;
+    border-color: #d4b873;
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkbox-custom::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 8px;
+    height: 12px;
+    border: 2px solid #0d1520;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+}
+
+.checkbox-label:hover .checkbox-custom {
+    border-color: #d4b873;
+}
+
+.checkbox-text {
+    color: #e8dcc0;
+    font-size: 13px;
+    line-height: 1.5;
 }
 
 /* ============================================

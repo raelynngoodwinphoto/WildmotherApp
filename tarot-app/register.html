@@ -8,6 +8,9 @@
 </head>
 <body>
     <div class="auth-container">
+        <div class="auth-brand">
+            <img src="images/BloodHoneyLogo.png" alt="Blood & Honey Collective" class="auth-logo">
+        </div>
         <div class="logo">
             <h1>Wild Mother Tarot</h1>
             <p>Create your account</p>
@@ -54,6 +57,14 @@
                 >
             </div>
 
+            <div class="form-group checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="communityOptIn" name="communityOptIn">
+                    <span class="checkbox-custom"></span>
+                    <span class="checkbox-text">Yes, I want to be a part of Blood and Honey Collective emails and community</span>
+                </label>
+            </div>
+
             <button type="submit" class="btn-primary" id="submitBtn">Create Account</button>
         </form>
 
@@ -74,6 +85,7 @@
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
+            const communityOptIn = document.getElementById('communityOptIn').checked;
 
             // Clear previous messages
             messageDiv.className = 'message';
@@ -96,7 +108,7 @@
             submitBtn.textContent = 'Creating Account...';
 
             // Call register function from auth.js
-            const result = await register(email, password);
+            const result = await register(email, password, { communityOptIn });
 
             if (result.success) {
                 showMessage('message', 'Account created successfully! Redirecting to login...', 'success');

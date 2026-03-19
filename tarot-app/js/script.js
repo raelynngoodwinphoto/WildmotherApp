@@ -761,6 +761,7 @@ const cardsData = {
 // Global variables
 let currentSpread = null;
 let selectedCards = [];
+let cardOrientations = []; // 'upright' or 'reversed' per card index
 
 // DOM elements
 const homePage = document.getElementById('home-page');
@@ -781,7 +782,7 @@ const questionText = document.getElementById('question-text');
 // Home page buttons
 const homeReadings = document.getElementById('home-readings');
 const homeJournal = document.getElementById('home-journal');
-const homeCardOfDay = document.getElementById('home-card-of-day');
+const homeBookReading = document.getElementById('home-book-reading');
 const homeWebsite = document.getElementById('home-website');
 
 // ==============================================
@@ -935,19 +936,27 @@ function setupSpread(spreadType) {
 function showHome() {
     homePage.classList.remove('hidden');
     spreadSelection.classList.add('hidden');
+    document.getElementById('physical-deck-prompt').classList.add('hidden');
+    document.getElementById('card-library').classList.add('hidden');
     cardArea.classList.add('hidden');
     readingArea.classList.add('hidden');
     resetContainer.classList.add('hidden');
     questionDisplay.classList.add('hidden');
 }
 
-function showSpreadSelection() {
+function showSpreadSelection(cardCount = 1) {
     homePage.classList.add('hidden');
     spreadSelection.classList.remove('hidden');
     cardArea.classList.add('hidden');
     readingArea.classList.add('hidden');
     resetContainer.classList.add('hidden');
     questionDisplay.classList.add('hidden');
+    document.getElementById('physical-deck-prompt').classList.add('hidden');
+    document.getElementById('card-library').classList.add('hidden');
+    currentSpread = cardCount;
+    selectedCards = [];
+    // Clear previous question
+    document.getElementById('reading-question').value = '';
 }
 
 // Reset reading
@@ -955,6 +964,7 @@ function resetReading() {
     // Clear data
     currentSpread = null;
     selectedCards = [];
+    cardOrientations = [];
     positionLabels.innerHTML = '';
     cardsContainer.innerHTML = '';
     cardDescriptions.innerHTML = '';
@@ -963,93 +973,61 @@ function resetReading() {
     readingQuestion.value = '';
     localStorage.removeItem('currentQuestion');
 
+    // Clear new flow elements
+    document.getElementById('card-images-grid').innerHTML = '';
+    document.getElementById('gpt-conversation').innerHTML = '';
+    document.getElementById('card-images-display').classList.add('hidden');
+    document.getElementById('journal-entry-modal').classList.add('hidden');
+    document.getElementById('gpt-chat-container').classList.add('hidden');
+
+    // Clear structured journal fields
+    document.getElementById('journal-question-input').value = '';
+    document.getElementById('journal-cards-input').value = '';
+    document.getElementById('journal-selected-cards').innerHTML = '';
+    document.getElementById('journal-reflections-textarea').value = '';
+    document.getElementById('journal-gpt-insights-textarea').value = '';
+    journalSelectedCardsData = [];
+
     // Show spread selection
     showSpreadSelection();
 }
 
 // Event listeners
-oneCardBtn.addEventListener('click', () => {
-    // Save question if provided
-    const question = readingQuestion.value.trim();
-    if (question) {
-        localStorage.setItem('currentQuestion', question);
-    }
-    initiatePhysicalReading(1); // Replace setupSpread with new function
-});
+if (oneCardBtn) {
+    oneCardBtn.addEventListener('click', () => {
+        const question = readingQuestion.value.trim();
+        if (question) {
+            localStorage.setItem('currentQuestion', question);
+        }
+        initiatePhysicalReading(1);
+    });
+}
 
-threeCardBtn.addEventListener('click', () => {
-    // Save question if provided
-    const question = readingQuestion.value.trim();
-    if (question) {
-        localStorage.setItem('currentQuestion', question);
-    }
-    initiatePhysicalReading(3); // Replace setupSpread with new function
-});
+if (threeCardBtn) {
+    threeCardBtn.addEventListener('click', () => {
+        const question = readingQuestion.value.trim();
+        if (question) {
+            localStorage.setItem('currentQuestion', question);
+        }
+        initiatePhysicalReading(3);
+    });
+}
 
 resetBtn.addEventListener('click', resetReading);
 
 // ============================================
-// MENU SYSTEM
+// HOME BUTTON
 // ============================================
 
-// Get menu elements
-const menuToggle = document.getElementById('menu-toggle');
-const menuOverlay = document.getElementById('menu-overlay');
-const menuClose = document.getElementById('menu-close');
-const menuHome = document.getElementById('menu-home');
-const menuJournal = document.getElementById('menu-journal');
-const menuExplore = document.getElementById('menu-explore');
 const readingQuestion = document.getElementById('reading-question');
-const logoutBtn = document.getElementById('logoutBtn');
-const menuUserEmail = document.getElementById('menuUserEmail');
 
-// Open menu
-function openMenu() {
-    menuOverlay.classList.remove('hidden');
-}
+document.getElementById('home-btn').addEventListener('click', showHome);
 
-// Close menu
-function closeMenu() {
-    menuOverlay.classList.add('hidden');
-}
-
-// Menu toggle button
-menuToggle.addEventListener('click', openMenu);
-
-// Close button
-menuClose.addEventListener('click', closeMenu);
-
-// Close menu when clicking outside the menu content
-menuOverlay.addEventListener('click', (e) => {
-    if (e.target === menuOverlay) {
-        closeMenu();
+document.getElementById('logout-btn').addEventListener('click', () => {
+    if (confirm('Are you sure you want to sign out?')) {
+        logout();
+        window.location.href = 'login.html';
     }
-});
-
-// Close menu with Escape key
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !menuOverlay.classList.contains('hidden')) {
-        closeMenu();
-    }
-});
-
-// Menu - Home button
-menuHome.addEventListener('click', () => {
-    closeMenu();
-    showHome();
-});
-
-// Menu - Journal button
-menuJournal.addEventListener('click', () => {
-    closeMenu();
-    showJournalPage();
-});
-
-// Menu - Explore Website button
-menuExplore.addEventListener('click', () => {
-    const websiteUrl = 'https://bloodandhoneycollective.com/';
-    window.open(websiteUrl, '_blank');
-    closeMenu();
 });
 
 // Home Page - Readings button
@@ -1062,15 +1040,9 @@ homeJournal.addEventListener('click', () => {
     showJournalPage();
 });
 
-// Home Page - Card of the Day button
-homeCardOfDay.addEventListener('click', () => {
-    // Automatically start a one-card physical reading
-    homePage.classList.add('hidden');
-    showSpreadSelection();
-    // Auto-initiate physical one-card reading
-    setTimeout(() => {
-        initiatePhysicalReading(1);
-    }, 100);
+// Home Page - Book a Reading button
+homeBookReading.addEventListener('click', () => {
+    window.open('https://raelynn-goodwin.studio.cloudspot.io/scheduling/services/69a5cc86124e841203f6d5d7', '_blank');
 });
 
 // Home Page - Visit Website button
@@ -1079,13 +1051,29 @@ homeWebsite.addEventListener('click', () => {
     window.open(websiteUrl, '_blank');
 });
 
-// Logout button in menu
-logoutBtn.addEventListener('click', () => {
-    if (confirm('Are you sure you want to sign out?')) {
-        logout();
-        window.location.href = 'login.html';
-    }
-});
+// Home Page - Explore the Deck button
+const homeCardLibrary = document.getElementById('home-card-library');
+if (homeCardLibrary) {
+    homeCardLibrary.addEventListener('click', () => {
+        showCardLibrary();
+    });
+}
+
+// Question screen - "Hold This in Your Heart" button
+const holdQuestionBtn = document.getElementById('hold-question-btn');
+if (holdQuestionBtn) {
+    holdQuestionBtn.addEventListener('click', () => {
+        const question = document.getElementById('reading-question').value.trim();
+        if (question) {
+            localStorage.setItem('currentQuestion', question);
+        } else {
+            localStorage.removeItem('currentQuestion');
+        }
+        spreadSelection.classList.add('hidden');
+        document.getElementById('physical-deck-prompt').classList.remove('hidden');
+    });
+}
+
 
 // ============================================
 // JOURNAL SAVE FUNCTIONALITY
@@ -1180,6 +1168,105 @@ if (saveToJournalBtn) {
 }
 
 // ============================================
+// JOURNAL CALENDAR
+// ============================================
+
+let calendarEntries = [];
+let calendarYear = new Date().getFullYear();
+let calendarMonth = new Date().getMonth();
+
+const MONTH_NAMES = ['January','February','March','April','May','June',
+                     'July','August','September','October','November','December'];
+
+function buildCalendar(entries) {
+    calendarEntries = entries;
+    renderCalendar();
+}
+
+function renderCalendar() {
+    const grid = document.getElementById('calendar-grid');
+    const title = document.getElementById('cal-month-title');
+    if (!grid || !title) return;
+
+    title.textContent = `${MONTH_NAMES[calendarMonth]} ${calendarYear}`;
+
+    // Map entries by date key "YYYY-M-D"
+    const entriesByDate = {};
+    calendarEntries.forEach(entry => {
+        const d = new Date(entry.createdAt);
+        const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+        if (!entriesByDate[key]) entriesByDate[key] = [];
+        entriesByDate[key].push(entry);
+    });
+
+    const firstDay = new Date(calendarYear, calendarMonth, 1).getDay();
+    const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+    const today = new Date();
+
+    grid.innerHTML = '';
+
+    // Empty cells before the 1st
+    for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement('div');
+        empty.className = 'cal-day empty';
+        grid.appendChild(empty);
+    }
+
+    // Day cells
+    for (let day = 1; day <= daysInMonth; day++) {
+        const key = `${calendarYear}-${calendarMonth}-${day}`;
+        const dayEntries = entriesByDate[key] || [];
+        const isToday = today.getFullYear() === calendarYear &&
+                        today.getMonth() === calendarMonth &&
+                        today.getDate() === day;
+
+        const cell = document.createElement('div');
+        cell.className = 'cal-day' +
+            (isToday ? ' today' : '') +
+            (dayEntries.length > 0 ? ' has-reading' : '');
+
+        const numSpan = document.createElement('span');
+        numSpan.className = 'cal-day-number';
+        numSpan.textContent = day;
+        cell.appendChild(numSpan);
+
+        if (dayEntries.length > 0) {
+            const entry = dayEntries[0];
+            const img = document.createElement('img');
+            img.src = (entry.cards && entry.cards.length > 0)
+                ? entry.cards[0].image
+                : 'cards/images/Back.png';
+            img.alt = 'Reading';
+            img.className = 'cal-card-icon';
+            cell.appendChild(img);
+
+            if (dayEntries.length > 1) {
+                const badge = document.createElement('span');
+                badge.className = 'cal-entry-count';
+                badge.textContent = dayEntries.length;
+                cell.appendChild(badge);
+            }
+
+            cell.addEventListener('click', () => showEntryDetail(entry));
+        }
+
+        grid.appendChild(cell);
+    }
+}
+
+document.getElementById('cal-prev').addEventListener('click', () => {
+    calendarMonth--;
+    if (calendarMonth < 0) { calendarMonth = 11; calendarYear--; }
+    renderCalendar();
+});
+
+document.getElementById('cal-next').addEventListener('click', () => {
+    calendarMonth++;
+    if (calendarMonth > 11) { calendarMonth = 0; calendarYear++; }
+    renderCalendar();
+});
+
+// ============================================
 // JOURNAL PAGE FUNCTIONALITY
 // ============================================
 
@@ -1199,6 +1286,7 @@ function showJournalPage() {
     // Hide all other sections
     homePage.classList.add('hidden');
     spreadSelection.classList.add('hidden');
+    document.getElementById('physical-deck-prompt').classList.add('hidden');
     cardArea.classList.add('hidden');
     readingArea.classList.add('hidden');
     document.getElementById('reset-container').classList.add('hidden');
@@ -1206,6 +1294,12 @@ function showJournalPage() {
     // Show journal page
     const journalPage = document.getElementById('journal-page');
     journalPage.classList.remove('hidden');
+
+    // Reset calendar to current month and render empty shell while entries load
+    calendarYear = new Date().getFullYear();
+    calendarMonth = new Date().getMonth();
+    calendarEntries = [];
+    renderCalendar();
 
     // Load entries
     loadJournalEntries();
@@ -1251,6 +1345,9 @@ async function loadJournalEntries() {
         const entries = await response.json();
         loadingEl.classList.add('hidden');
 
+        // Populate calendar with all entries
+        buildCalendar(entries);
+
         if (entries.length === 0) {
             emptyEl.classList.remove('hidden');
             return;
@@ -1262,14 +1359,35 @@ async function loadJournalEntries() {
             entryCard.className = 'journal-entry-card';
             entryCard.onclick = () => showEntryDetail(entry);
 
-            const preview = entry.content ?
-                (entry.content.length > 150 ? entry.content.substring(0, 150) + '...' : entry.content) :
-                'No reflections';
+            // Determine preview text based on structured or legacy format
+            let preview = '';
+            if (entry.reflections) {
+                // Structured format
+                preview = entry.reflections.length > 150
+                    ? entry.reflections.substring(0, 150) + '...'
+                    : entry.reflections;
+            } else if (entry.content) {
+                // Legacy format
+                preview = entry.content.length > 150
+                    ? entry.content.substring(0, 150) + '...'
+                    : entry.content;
+            } else {
+                preview = 'No reflections';
+            }
+
+            // Show cards count if structured
+            let cardsInfo = '';
+            if (entry.cards && entry.cards.length > 0) {
+                cardsInfo = `<span class="entry-cards-count">${entry.cards.length} card${entry.cards.length > 1 ? 's' : ''}</span>`;
+            }
 
             entryCard.innerHTML = `
                 <div class="journal-entry-header">
                     <h3 class="journal-entry-title">${escapeHtml(entry.title)}</h3>
-                    <span class="journal-entry-date">${formatEntryDate(entry.createdAt)}</span>
+                    <div class="journal-entry-meta">
+                        ${cardsInfo}
+                        <span class="journal-entry-date">${formatEntryDate(entry.createdAt)}</span>
+                    </div>
                 </div>
                 <p class="journal-entry-preview">${escapeHtml(preview)}</p>
             `;
@@ -1288,16 +1406,79 @@ function showEntryDetail(entry) {
     const modal = document.getElementById('entry-detail-modal');
     const content = document.getElementById('entry-detail-content');
 
-    content.innerHTML = `
+    // Build HTML for structured or legacy format
+    let detailHTML = `
         <div class="entry-detail-header">
             <h2 class="entry-detail-title">${escapeHtml(entry.title)}</h2>
             <p class="entry-detail-date">${formatEntryDate(entry.createdAt)}</p>
         </div>
         <div class="entry-detail-body">
+    `;
+
+    // Structured format
+    if (entry.question || entry.cards || entry.reflections || entry.gptInsights) {
+        // Question
+        if (entry.question) {
+            detailHTML += `
+                <div class="entry-section">
+                    <h4 class="entry-section-title">Question I Asked</h4>
+                    <p class="entry-section-content">${escapeHtml(entry.question)}</p>
+                </div>
+            `;
+        }
+
+        // Cards with images
+        if (entry.cards && entry.cards.length > 0) {
+            detailHTML += `
+                <div class="entry-section">
+                    <h4 class="entry-section-title">Cards I Pulled</h4>
+                    <div class="entry-cards-display">
+            `;
+            entry.cards.forEach(card => {
+                detailHTML += `
+                    <div class="entry-card-item">
+                        <img src="${card.image}" alt="${escapeHtml(card.name)}" class="entry-card-image">
+                        <div class="entry-card-name">${escapeHtml(card.name)}</div>
+                    </div>
+                `;
+            });
+            detailHTML += `
+                    </div>
+                </div>
+            `;
+        }
+
+        // Reflections
+        if (entry.reflections) {
+            detailHTML += `
+                <div class="entry-section">
+                    <h4 class="entry-section-title">My Reflections</h4>
+                    <p class="entry-section-content">${escapeHtml(entry.reflections)}</p>
+                </div>
+            `;
+        }
+
+        // GPT Insights
+        if (entry.gptInsights) {
+            detailHTML += `
+                <div class="entry-section">
+                    <h4 class="entry-section-title">GPT Insights</h4>
+                    <p class="entry-section-content">${escapeHtml(entry.gptInsights)}</p>
+                </div>
+            `;
+        }
+    } else {
+        // Legacy format
+        detailHTML += `
             <p class="entry-detail-content">${escapeHtml(entry.content || 'No reflections')}</p>
+        `;
+    }
+
+    detailHTML += `
         </div>
     `;
 
+    content.innerHTML = detailHTML;
     modal.classList.remove('hidden');
 }
 
@@ -1348,91 +1529,104 @@ function initiatePhysicalReading(cardCount) {
 
     // Show physical deck prompt
     const physicalPrompt = document.getElementById('physical-deck-prompt');
-    document.getElementById('cards-to-pull').textContent = cardCount;
     physicalPrompt.classList.remove('hidden');
 }
 
 // Show card picker interface with searchable positions
 function showCardPicker() {
-    // Hide physical deck prompt
+    // Hide physical deck prompt and question screen
     document.getElementById('physical-deck-prompt').classList.add('hidden');
+    document.getElementById('spread-selection').classList.add('hidden');
 
-    // Setup card picker positions
+    // Show question at top of picker if one was asked
+    const currentQuestion = localStorage.getItem('currentQuestion');
+    const pickerQuestion = document.getElementById('card-picker-question');
+    const pickerQuestionText = document.getElementById('card-picker-question-text');
+    if (currentQuestion && pickerQuestion && pickerQuestionText) {
+        pickerQuestionText.textContent = currentQuestion;
+        pickerQuestion.classList.remove('hidden');
+    } else if (pickerQuestion) {
+        pickerQuestion.classList.add('hidden');
+    }
+
+    // Reset and start with one card slot
     const pickerPositions = document.getElementById('card-picker-positions');
     pickerPositions.innerHTML = '';
+    selectedCards = [];
 
-    const positions = currentSpread === 1
-        ? ['Your Card']
-        : ['Past', 'Present', 'Future'];
-
-    positions.forEach((position, index) => {
-        const positionDiv = document.createElement('div');
-        positionDiv.className = 'card-picker-position';
-        positionDiv.innerHTML = `
-            <h3>${position}</h3>
-            <input
-                type="text"
-                class="card-search-input"
-                data-position="${index}"
-                placeholder="Search for card name..."
-                autocomplete="off"
-            />
-            <div class="card-suggestions" data-position="${index}"></div>
-            <div class="selected-card-display" data-position="${index}"></div>
-        `;
-        pickerPositions.appendChild(positionDiv);
-    });
+    addCardPickerSlot(0, 'Your Card', false);
 
     // Show card picker
     document.getElementById('card-picker').classList.remove('hidden');
-
-    // Attach search event listeners
-    attachCardSearchListeners();
 }
 
-// Attach autocomplete search to card inputs
-function attachCardSearchListeners() {
-    const searchInputs = document.querySelectorAll('.card-search-input');
+// Add a card picker slot to the picker
+function addCardPickerSlot(index, label, isOptional) {
+    const pickerPositions = document.getElementById('card-picker-positions');
 
-    searchInputs.forEach(input => {
-        input.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase().trim();
-            const position = e.target.dataset.position;
-            const suggestionsDiv = document.querySelector(`.card-suggestions[data-position="${position}"]`);
+    const positionDiv = document.createElement('div');
+    positionDiv.className = 'card-picker-position' + (isOptional ? ' optional-slot' : '');
+    positionDiv.dataset.slot = index;
+    positionDiv.innerHTML = `
+        ${isOptional ? '<p class="optional-slot-label">Did another card call to you?</p>' : ''}
+        <input
+            type="text"
+            class="card-search-input"
+            data-position="${index}"
+            placeholder="Search for card name..."
+            autocomplete="off"
+        />
+        <div class="card-suggestions" data-position="${index}"></div>
+        <div class="selected-card-display" data-position="${index}"></div>
+    `;
+    pickerPositions.appendChild(positionDiv);
 
-            if (searchTerm.length < 2) {
-                suggestionsDiv.innerHTML = '';
-                return;
-            }
+    // Attach search listener to this new input
+    attachSingleSearchListener(positionDiv.querySelector('.card-search-input'));
 
-            // Filter cards by name match
-            const matches = cardsData.cards.filter(card =>
-                card.name.toLowerCase().includes(searchTerm)
-            );
+    // Scroll new slot into view
+    setTimeout(() => positionDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+}
 
-            // Display up to 8 matches
-            suggestionsDiv.innerHTML = matches.slice(0, 8).map(card => `
-                <div class="card-suggestion-item" data-card-id="${card.id}" data-position="${position}">
-                    ${card.name}
-                </div>
-            `).join('');
+// Attach autocomplete search to a single input
+function attachSingleSearchListener(input) {
+    input.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase().trim();
+        const position = e.target.dataset.position;
+        const suggestionsDiv = document.querySelector(`.card-suggestions[data-position="${position}"]`);
 
-            // Attach click listeners to suggestions
-            suggestionsDiv.querySelectorAll('.card-suggestion-item').forEach(item => {
-                item.addEventListener('click', () => selectCard(
-                    parseInt(item.dataset.cardId),
-                    parseInt(item.dataset.position)
-                ));
-            });
+        if (searchTerm.length < 2) {
+            suggestionsDiv.innerHTML = '';
+            return;
+        }
+
+        // Filter cards by name match
+        const matches = cardsData.cards.filter(card =>
+            card.name.toLowerCase().includes(searchTerm)
+        );
+
+        // Display up to 8 matches
+        suggestionsDiv.innerHTML = matches.slice(0, 8).map(card => `
+            <div class="card-suggestion-item" data-card-id="${card.id}" data-position="${position}">
+                ${card.name}
+            </div>
+        `).join('');
+
+        // Attach click listeners to suggestions
+        suggestionsDiv.querySelectorAll('.card-suggestion-item').forEach(item => {
+            item.addEventListener('click', () => selectCard(
+                parseInt(item.dataset.cardId),
+                parseInt(item.dataset.position)
+            ));
         });
+    });
 
-        // Clear suggestions when clicking outside
-        input.addEventListener('blur', () => {
-            setTimeout(() => {
-                const suggestionsDiv = document.querySelector(`.card-suggestions[data-position="${input.dataset.position}"]`);
-                suggestionsDiv.innerHTML = '';
-            }, 200);
-        });
+    // Clear suggestions when clicking outside
+    input.addEventListener('blur', () => {
+        setTimeout(() => {
+            const suggestionsDiv = document.querySelector(`.card-suggestions[data-position="${input.dataset.position}"]`);
+            if (suggestionsDiv) suggestionsDiv.innerHTML = '';
+        }, 200);
     });
 }
 
@@ -1467,31 +1661,36 @@ function selectCard(cardId, position) {
     const suggestionsDiv = document.querySelector(`.card-suggestions[data-position="${position}"]`);
     suggestionsDiv.innerHTML = '';
 
-    // Check if all positions are filled
+    // After selecting the first card, add an optional second slot if not already shown
+    if (position === 0 && !document.querySelector('.card-picker-position[data-slot="1"]')) {
+        addCardPickerSlot(1, 'Another Card', true);
+    }
+
     checkConfirmButtonState();
 }
 
-// Enable confirm button when all positions filled
+// Enable confirm button once at least 1 card is selected
 function checkConfirmButtonState() {
-    const requiredCount = currentSpread === 1 ? 1 : 3;
     const filledCount = selectedCards.filter(c => c !== null && c !== undefined).length;
-
     const confirmBtn = document.getElementById('confirm-cards');
-    confirmBtn.disabled = filledCount < requiredCount;
+    confirmBtn.disabled = filledCount < 1;
 }
 
-// Confirm selected cards and show reading
+// Confirm selected cards and show card images display (NEW FLOW)
 function confirmCardSelection() {
-    if (selectedCards.filter(c => c).length < currentSpread) {
-        alert('Please select a card for each position.');
-        return;
-    }
+    const chosen = selectedCards.filter(c => c);
+    if (chosen.length < 1) return;
+
+    // Compact selectedCards to only filled slots
+    selectedCards = chosen;
+    currentSpread = selectedCards.length;
+    cardOrientations = selectedCards.map(() => 'upright');
 
     // Hide card picker
     document.getElementById('card-picker').classList.add('hidden');
 
-    // Show reading with selected cards
-    displayPhysicalReading();
+    // Show card images display (new flow)
+    showCardImagesDisplay();
 }
 
 // Display reading with user-selected cards
@@ -1513,11 +1712,6 @@ function displayPhysicalReading() {
     // Clear previous reading
     cardDescriptions.innerHTML = '';
 
-    // Get position labels
-    const positions = currentSpread === 1
-        ? ['Your Card']
-        : ['Past', 'Present', 'Future'];
-
     // Display each selected card
     selectedCards.forEach((card, index) => {
         if (!card) return;
@@ -1526,7 +1720,6 @@ function displayPhysicalReading() {
         cardDiv.className = 'card-description';
         cardDiv.innerHTML = `
             <div class="card-description-header">
-                <h3>${positions[index]}</h3>
                 <h2>${card.name}</h2>
                 ${card.subtitle ? `<p class="card-subtitle">${card.subtitle}</p>` : ''}
             </div>
@@ -1551,13 +1744,486 @@ function displayPhysicalReading() {
 }
 
 // ============================================
+// NEW CARD IMAGES DISPLAY FLOW
+// ============================================
+
+// Global variable for journal selected cards
+let journalSelectedCardsData = [];
+
+// Show card images display (images only, no meanings)
+function showCardImagesDisplay() {
+    const cardImagesDisplay = document.getElementById('card-images-display');
+    const cardImagesGrid = document.getElementById('card-images-grid');
+    const cardImagesQuestion = document.getElementById('card-images-question');
+    const cardImagesQuestionText = document.getElementById('card-images-question-text');
+
+    // Show question if exists
+    const currentQuestion = localStorage.getItem('currentQuestion');
+    if (currentQuestion) {
+        cardImagesQuestionText.textContent = currentQuestion;
+        cardImagesQuestion.classList.remove('hidden');
+    } else {
+        cardImagesQuestion.classList.add('hidden');
+    }
+
+    // Clear previous images
+    cardImagesGrid.innerHTML = '';
+
+    // Display each selected card (image + name only)
+    selectedCards.forEach((card, index) => {
+        if (!card) return;
+
+        const cardItem = document.createElement('div');
+        cardItem.className = 'card-image-item';
+        cardItem.style.animationDelay = `${index * 0.2}s`;
+        cardItem.innerHTML = `
+            <div class="card-image-wrapper">
+                <img id="card-img-${index}" src="${card.image}" alt="${card.name}" onerror="this.src='cards/images/placeholder.png'">
+            </div>
+            <div class="card-image-name">${card.name}</div>
+            <div class="orientation-toggle" data-index="${index}">
+                <button class="orientation-btn orientation-btn--active" data-orientation="upright">Upright</button>
+                <button class="orientation-btn" data-orientation="reversed">Reversed</button>
+            </div>
+        `;
+        cardImagesGrid.appendChild(cardItem);
+
+        // Wire up orientation toggle
+        cardItem.querySelectorAll('.orientation-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const i = parseInt(btn.closest('.orientation-toggle').dataset.index);
+                const orientation = btn.dataset.orientation;
+                cardOrientations[i] = orientation;
+
+                // Update active state on buttons
+                btn.closest('.orientation-toggle').querySelectorAll('.orientation-btn').forEach(b => {
+                    b.classList.toggle('orientation-btn--active', b === btn);
+                });
+
+                // Flip image if reversed
+                const img = document.getElementById(`card-img-${i}`);
+                if (img) img.classList.toggle('card-img-reversed', orientation === 'reversed');
+            });
+        });
+    });
+
+    // Show card images display
+    cardImagesDisplay.classList.remove('hidden');
+
+    // Show reset button
+    document.getElementById('reset-container').classList.remove('hidden');
+}
+
+// ============================================
+// CARD LIBRARY
+// ============================================
+
+function showCardLibrary() {
+    homePage.classList.add('hidden');
+    spreadSelection.classList.add('hidden');
+    document.getElementById('physical-deck-prompt').classList.add('hidden');
+    cardArea.classList.add('hidden');
+    readingArea.classList.add('hidden');
+    resetContainer.classList.add('hidden');
+    document.getElementById('card-images-display').classList.add('hidden');
+
+    const libraryEl = document.getElementById('card-library');
+    const grid = document.getElementById('library-grid');
+
+    // Populate grid only once
+    if (grid.children.length === 0) {
+        cardsData.cards.forEach(card => {
+            const el = document.createElement('div');
+            el.className = 'library-card';
+            el.innerHTML = `
+                <img class="library-card-image" src="${card.image}" alt="${card.name}"
+                     onerror="this.style.background='rgba(26,74,85,0.6)';this.style.height='180px';">
+                <span class="library-card-name">${card.name}</span>
+            `;
+            el.addEventListener('click', () => showCardDetail(card));
+            grid.appendChild(el);
+        });
+    }
+
+    libraryEl.classList.remove('hidden');
+}
+
+function showCardDetail(card) {
+    const modal = document.getElementById('card-detail-modal');
+    const body = document.getElementById('card-detail-body');
+
+    body.innerHTML = `
+        <div class="card-detail-inner">
+            <img class="card-detail-image" src="${card.image}" alt="${card.name}"
+                 onerror="this.style.display='none'">
+            <div class="card-detail-text">
+                <h2 class="card-detail-name">${card.name}</h2>
+                ${card.subtitle ? `<p class="card-detail-subtitle">${card.subtitle}</p>` : ''}
+                <div class="card-detail-keywords">
+                    ${card.keywords.map(k => `<span class="card-detail-keyword">${k}</span>`).join('')}
+                </div>
+                ${card.description ? `
+                    <p class="card-detail-section-title">The Card</p>
+                    <p class="card-detail-section-text">${card.description}</p>
+                ` : ''}
+                <p class="card-detail-section-title">Upright</p>
+                <p class="card-detail-section-text">${card.upright}</p>
+                ${card.reversed ? `
+                    <p class="card-detail-section-title" style="margin-top:24px;">Reversed</p>
+                    <p class="card-detail-section-text">${card.reversed}</p>
+                ` : ''}
+            </div>
+        </div>
+    `;
+
+    modal.classList.remove('hidden');
+}
+
+// Close card detail modal
+const closeCardDetailBtn = document.getElementById('close-card-detail');
+if (closeCardDetailBtn) {
+    closeCardDetailBtn.addEventListener('click', () => {
+        document.getElementById('card-detail-modal').classList.add('hidden');
+    });
+}
+
+// Close modal on backdrop click
+document.getElementById('card-detail-modal')?.addEventListener('click', (e) => {
+    if (e.target === document.getElementById('card-detail-modal')) {
+        document.getElementById('card-detail-modal').classList.add('hidden');
+    }
+});
+
+// ============================================
+// STRUCTURED JOURNAL HELPER FUNCTIONS
+// ============================================
+
+// Add card to journal selection
+function addCardToJournal(card, orientation = 'upright') {
+    // Check if card is already selected
+    if (journalSelectedCardsData.find(c => c.id === card.id)) {
+        return;
+    }
+
+    // Add to array
+    journalSelectedCardsData.push(card);
+
+    const isReversed = orientation === 'reversed';
+    const selectedCardsContainer = document.getElementById('journal-selected-cards');
+    const cardElement = document.createElement('div');
+    cardElement.className = 'journal-selected-card';
+    cardElement.dataset.cardId = card.id;
+    cardElement.innerHTML = `
+        <button class="journal-remove-card-btn" onclick="removeCardFromJournal(${card.id})">✕</button>
+        <img src="${card.image}" alt="${card.name}" class="journal-selected-card-image${isReversed ? ' card-img-reversed' : ''}">
+        <div class="journal-selected-card-name">${card.name}${isReversed ? '<span class="journal-card-reversed-tag">Reversed</span>' : ''}</div>
+    `;
+    selectedCardsContainer.appendChild(cardElement);
+}
+
+// Remove card from journal selection
+function removeCardFromJournal(cardId) {
+    // Remove from array
+    journalSelectedCardsData = journalSelectedCardsData.filter(c => c.id !== cardId);
+
+    // Remove from DOM
+    const cardElement = document.querySelector(`.journal-selected-card[data-card-id="${cardId}"]`);
+    if (cardElement) {
+        cardElement.remove();
+    }
+}
+
+// Handle card search input
+function handleJournalCardSearch(searchText) {
+    const suggestionsContainer = document.getElementById('journal-card-suggestions');
+
+    if (!searchText || searchText.length < 2) {
+        suggestionsContainer.classList.add('hidden');
+        suggestionsContainer.innerHTML = '';
+        return;
+    }
+
+    // Filter cards by search text
+    const searchLower = searchText.toLowerCase();
+    const matchingCards = cardsData.cards.filter(card =>
+        card.name.toLowerCase().includes(searchLower)
+    ).slice(0, 8); // Limit to 8 suggestions
+
+    if (matchingCards.length === 0) {
+        suggestionsContainer.classList.add('hidden');
+        suggestionsContainer.innerHTML = '';
+        return;
+    }
+
+    // Display suggestions
+    suggestionsContainer.innerHTML = '';
+    matchingCards.forEach(card => {
+        const suggestionItem = document.createElement('div');
+        suggestionItem.className = 'journal-card-suggestion-item';
+        suggestionItem.innerHTML = `
+            <img src="${card.image}" alt="${card.name}" class="journal-card-suggestion-thumb">
+            <div class="journal-card-suggestion-name">${card.name}</div>
+        `;
+        suggestionItem.addEventListener('click', () => {
+            addCardToJournal(card);
+            document.getElementById('journal-cards-input').value = '';
+            suggestionsContainer.classList.add('hidden');
+            suggestionsContainer.innerHTML = '';
+        });
+        suggestionsContainer.appendChild(suggestionItem);
+    });
+
+    suggestionsContainer.classList.remove('hidden');
+}
+
+// Open journal entry modal (structured format)
+function openJournalModal() {
+    const modal = document.getElementById('journal-entry-modal');
+    const questionInput = document.getElementById('journal-question-input');
+    const cardsInput = document.getElementById('journal-cards-input');
+    const selectedCardsContainer = document.getElementById('journal-selected-cards');
+    const reflectionsTextarea = document.getElementById('journal-reflections-textarea');
+    const gptInsightsTextarea = document.getElementById('journal-gpt-insights-textarea');
+
+    // Pre-fill question if exists
+    const currentQuestion = localStorage.getItem('currentQuestion');
+    questionInput.value = currentQuestion || '';
+
+    // Clear and pre-fill cards from current reading
+    selectedCardsContainer.innerHTML = '';
+    journalSelectedCardsData = []; // Reset global array
+
+    selectedCards.forEach((card, index) => {
+        if (!card) return;
+        addCardToJournal(card, cardOrientations[index]);
+    });
+
+    // Clear other fields
+    cardsInput.value = '';
+    reflectionsTextarea.value = '';
+    gptInsightsTextarea.value = '';
+
+    // Clear any previous save message
+    document.getElementById('journal-modal-save-message').classList.add('hidden');
+
+    // Show modal
+    modal.classList.remove('hidden');
+
+    // Focus reflections textarea
+    setTimeout(() => reflectionsTextarea.focus(), 100);
+}
+
+// Close journal entry modal
+function closeJournalModal() {
+    const modal = document.getElementById('journal-entry-modal');
+    modal.classList.add('hidden');
+
+    // Clear save message
+    document.getElementById('journal-modal-save-message').classList.add('hidden');
+
+    // Hide card suggestions
+    document.getElementById('journal-card-suggestions').classList.add('hidden');
+}
+
+// Save journal entry from modal (structured format)
+async function saveFromJournalModal() {
+    // Check authentication
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+        alert('Please sign in to save your reading.');
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // Get all field values
+    const question = document.getElementById('journal-question-input').value.trim();
+    const reflections = document.getElementById('journal-reflections-textarea').value.trim();
+    const gptInsights = document.getElementById('journal-gpt-insights-textarea').value.trim();
+
+    // Validate - at least reflections or GPT insights required
+    if (!reflections && !gptInsights) {
+        showJournalModalMessage('Please write your reflections or add GPT insights before saving.', 'error');
+        return;
+    }
+
+    // Validate - at least one card required
+    if (journalSelectedCardsData.length === 0) {
+        showJournalModalMessage('Please select at least one card.', 'error');
+        return;
+    }
+
+    // Create structured entry data
+    const entryData = {
+        title: question || 'Tarot Reading',
+        question: question,
+        cards: journalSelectedCardsData.map(card => ({
+            name: card.name,
+            image: card.image
+        })),
+        reflections: reflections,
+        gptInsights: gptInsights
+    };
+
+    try {
+        const response = await fetch(API_BASE_URL + '/api/Journal', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(entryData)
+        });
+
+        if (response.ok) {
+            showJournalModalMessage('Saved to journal! ✓', 'success');
+            // Clear fields on success
+            document.getElementById('journal-question-input').value = '';
+            document.getElementById('journal-reflections-textarea').value = '';
+            document.getElementById('journal-gpt-insights-textarea').value = '';
+            document.getElementById('journal-selected-cards').innerHTML = '';
+            journalSelectedCardsData = [];
+        } else if (response.status === 401) {
+            alert('Session expired. Please sign in again.');
+            window.location.href = 'login.html';
+        } else {
+            const errorData = await response.json();
+            showJournalModalMessage(errorData.message || 'Failed to save. Please try again.', 'error');
+        }
+    } catch (error) {
+        console.error('Save error:', error);
+        showJournalModalMessage('Network error. Please check your connection.', 'error');
+    }
+}
+
+// Show message in journal modal
+function showJournalModalMessage(text, type) {
+    const messageDiv = document.getElementById('journal-modal-save-message');
+    messageDiv.textContent = text;
+    messageDiv.className = 'save-message ' + type;
+    messageDiv.classList.remove('hidden');
+
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+        messageDiv.classList.add('hidden');
+    }, 3000);
+}
+
+// Open GPT chat from card images display
+function openGPTFromCardImages() {
+    // Close journal modal if open
+    closeJournalModal();
+
+    // Build context message for Custom GPT
+    const positions = currentSpread === 1
+        ? ['Your Card']
+        : ['Past', 'Present', 'Future'];
+
+    let contextMessage = '';
+
+    // Add question if exists
+    const currentQuestion = localStorage.getItem('currentQuestion');
+    if (currentQuestion) {
+        contextMessage += `My question: "${currentQuestion}"\n\n`;
+    }
+
+    // Add cards with orientation
+    contextMessage += 'The cards I pulled:\n';
+    selectedCards.forEach((card, index) => {
+        if (!card) return;
+        const orientation = cardOrientations[index] === 'reversed' ? ' (Reversed)' : '';
+        contextMessage += `${card.name}${orientation}\n`;
+    });
+
+    // Encode message for URL
+    const encodedMessage = encodeURIComponent(contextMessage);
+
+    // Open Custom GPT in new window with pre-filled context
+    const customGPTUrl = `https://chatgpt.com/g/g-6880d5cbf0a88191af82f06124c892aa-wildmother-tarot-reader?q=${encodedMessage}`;
+    window.open(customGPTUrl, '_blank', 'width=1200,height=800');
+}
+
+// Send initial context to GPT
+async function sendInitialGPTContext() {
+    const token = localStorage.getItem('accessToken');
+    if (!token) return;
+
+    const conversation = document.getElementById('gpt-conversation');
+
+    // Get position labels
+    const positions = currentSpread === 1
+        ? ['Your Card']
+        : ['Past', 'Present', 'Future'];
+
+    // Format card context with orientation
+    let cardContext = 'I pulled the following cards:\n\n';
+    selectedCards.forEach((card, index) => {
+        if (!card) return;
+        const orientation = cardOrientations[index] === 'reversed' ? ' (Reversed)' : '';
+        cardContext += `${card.name}${orientation}\n`;
+    });
+
+    // Add question if exists
+    const currentQuestion = localStorage.getItem('currentQuestion');
+    if (currentQuestion) {
+        cardContext = `My question: "${currentQuestion}"\n\n` + cardContext;
+    }
+
+    try {
+        const response = await fetch(API_BASE_URL + '/api/CardInsight', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                question: currentQuestion || '',
+                cards: selectedCards.filter(c => c).map(c => c.name),
+                userMessage: cardContext,
+                initialize: true
+            })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+
+            // Display assistant's welcome message
+            const assistantMsg = document.createElement('div');
+            assistantMsg.className = 'gpt-message gpt-message-assistant';
+            assistantMsg.innerHTML = `<div class="gpt-message-content">${data.response || 'Welcome! I\'m here to help you explore the meanings of your cards. What would you like to know?'}</div>`;
+            conversation.appendChild(assistantMsg);
+
+            // Scroll to bottom
+            conversation.scrollTop = conversation.scrollHeight;
+        } else if (response.status === 401) {
+            alert('Session expired. Please sign in again.');
+            window.location.href = 'login.html';
+        } else {
+            // Fallback: show generic welcome
+            const assistantMsg = document.createElement('div');
+            assistantMsg.className = 'gpt-message gpt-message-assistant';
+            assistantMsg.innerHTML = `<div class="gpt-message-content">Welcome! I'm here to help you explore the meanings of your cards. What would you like to know?</div>`;
+            conversation.appendChild(assistantMsg);
+        }
+    } catch (error) {
+        console.error('GPT context error:', error);
+        // Fallback: show generic welcome
+        const assistantMsg = document.createElement('div');
+        assistantMsg.className = 'gpt-message gpt-message-assistant';
+        assistantMsg.innerHTML = `<div class="gpt-message-content">Welcome! I'm here to help you explore the meanings of your cards. What would you like to know?</div>`;
+        conversation.appendChild(assistantMsg);
+    }
+}
+
+// ============================================
 // PHYSICAL DECK EVENT LISTENERS
 // ============================================
 
 // Physical deck flow: "I've Pulled My Cards" button
 const continueToPickerBtn = document.getElementById('continue-to-picker');
 if (continueToPickerBtn) {
-    continueToPickerBtn.addEventListener('click', showCardPicker);
+    continueToPickerBtn.addEventListener('click', () => {
+        showCardPicker();
+    });
 }
 
 // Physical deck flow: "Confirm Cards" button
@@ -1598,6 +2264,73 @@ if (sendGptMessageBtn && gptInput) {
 }
 
 // ============================================
+// NEW FLOW EVENT LISTENERS
+// ============================================
+
+// Card Images Display: Open Journal button
+const openJournalBtn = document.getElementById('open-journal-btn');
+if (openJournalBtn) {
+    openJournalBtn.addEventListener('click', openJournalModal);
+}
+
+// Card Images Display: Explore Meanings button
+const exploreMeaningsBtn = document.getElementById('explore-meanings-btn');
+if (exploreMeaningsBtn) {
+    exploreMeaningsBtn.addEventListener('click', openGPTFromCardImages);
+}
+
+// Journal Modal: Close button
+const closeJournalEntryModalBtn = document.getElementById('close-journal-entry-modal');
+if (closeJournalEntryModalBtn) {
+    closeJournalEntryModalBtn.addEventListener('click', closeJournalModal);
+}
+
+// Journal Modal: Save button
+const saveJournalModalBtn = document.getElementById('save-journal-modal-btn');
+if (saveJournalModalBtn) {
+    saveJournalModalBtn.addEventListener('click', saveFromJournalModal);
+}
+
+// Journal Modal: Link to GPT button
+const journalToGptBtn = document.getElementById('journal-to-gpt-btn');
+if (journalToGptBtn) {
+    journalToGptBtn.addEventListener('click', openGPTFromCardImages);
+}
+
+// Modal keyboard handling: Escape key
+document.addEventListener('keydown', (e) => {
+    const journalModal = document.getElementById('journal-entry-modal');
+    if (e.key === 'Escape' && !journalModal.classList.contains('hidden')) {
+        closeJournalModal();
+    }
+});
+
+// Modal click outside handling
+const journalEntryModal = document.getElementById('journal-entry-modal');
+if (journalEntryModal) {
+    journalEntryModal.addEventListener('click', (e) => {
+        if (e.target.id === 'journal-entry-modal') {
+            closeJournalModal();
+        }
+    });
+}
+
+// Journal card search input
+const journalCardsInput = document.getElementById('journal-cards-input');
+if (journalCardsInput) {
+    journalCardsInput.addEventListener('input', (e) => {
+        handleJournalCardSearch(e.target.value);
+    });
+
+    // Hide suggestions on blur (with delay to allow click)
+    journalCardsInput.addEventListener('blur', () => {
+        setTimeout(() => {
+            document.getElementById('journal-card-suggestions').classList.add('hidden');
+        }, 200);
+    });
+}
+
+// ============================================
 // GPT CHAT FUNCTIONALITY
 // ============================================
 
@@ -1625,8 +2358,10 @@ async function sendGptMessage() {
     try {
         // Prepare context: selected cards + user question
         const cardContext = selectedCards.map((card, index) => {
-            const positions = currentSpread === 1 ? ['Your Card'] : ['Past', 'Present', 'Future'];
-            return `${positions[index]}: ${card.name} - ${card.description || card.upright}`;
+            const isReversed = cardOrientations[index] === 'reversed';
+            const meaning = isReversed ? card.reversed : (card.upright || card.description);
+            const label = isReversed ? `${card.name} (Reversed)` : card.name;
+            return `${label}: ${meaning}`;
         }).join('\n\n');
 
         const currentQuestion = localStorage.getItem('currentQuestion') || 'No specific question';
@@ -1686,8 +2421,9 @@ if (useDigitalBtn) {
     useDigitalBtn.addEventListener('click', () => {
         const confirmMsg = 'This will use digital cards instead of your physical deck. The physical deck experience is recommended. Continue anyway?';
         if (confirm(confirmMsg)) {
-            // Hide physical prompt
+            // Hide physical prompt and question screen
             document.getElementById('physical-deck-prompt').classList.add('hidden');
+            document.getElementById('spread-selection').classList.add('hidden');
             // Show card area and use old digital flow
             cardArea.classList.remove('hidden');
             setupSpread(currentSpread);
