@@ -8,45 +8,11 @@
 </head>
 <body>
     <div class="container">
-        <!-- Menu Button -->
-        <button id="menu-toggle" class="menu-toggle">☰ Menu</button>
+        <!-- Home Button -->
+        <button id="home-btn" class="menu-toggle">🏠 Home</button>
 
-        <!-- Menu Overlay -->
-        <div id="menu-overlay" class="menu-overlay hidden">
-            <div class="menu-content">
-                <button id="menu-close" class="menu-close">✕</button>
-
-                <h2 class="menu-title">Wild Mother Tarot</h2>
-
-                <!-- User Info in Menu -->
-                <div class="menu-user-info">
-                    <span id="menuUserEmail" class="menu-user-email"></span>
-                </div>
-
-                <!-- Menu Buttons -->
-                <div class="menu-buttons">
-                    <button id="menu-home" class="menu-btn">
-                        <span class="menu-btn-icon">🏠</span>
-                        <span class="menu-btn-text">Home</span>
-                    </button>
-
-                    <button id="menu-journal" class="menu-btn">
-                        <span class="menu-btn-icon">📖</span>
-                        <span class="menu-btn-text">Journal</span>
-                    </button>
-
-                    <button id="menu-explore" class="menu-btn">
-                        <span class="menu-btn-icon">✨</span>
-                        <span class="menu-btn-text">Visit Website</span>
-                    </button>
-
-                    <button id="logoutBtn" class="menu-btn menu-btn-logout">
-                        <span class="menu-btn-icon">🚪</span>
-                        <span class="menu-btn-text">Sign Out</span>
-                    </button>
-                </div>
-            </div>
-        </div>
+        <!-- Logout Button -->
+        <button id="logout-btn" class="logout-btn">Sign Out</button>
 
         <!-- Home Page -->
         <div id="home-page" class="home-page">
@@ -73,12 +39,12 @@
                     <p class="home-option-desc">Reflect, record, remember.</p>
                 </button>
 
-                <button id="home-card-of-day" class="home-option-btn">
+                <button id="home-book-reading" class="home-option-btn">
                     <div class="home-option-icon">
-                        <img src="images/CardOfTheDayButton.png" alt="Daily Insight" class="icon-image">
+                        <img src="images/CardOfTheDayButton.png" alt="Book a Reading" class="icon-image">
                     </div>
-                    <h3 class="home-option-title">Daily Insight</h3>
-                    <p class="home-option-desc">Pull a single card for guidance on your day ahead.</p>
+                    <h3 class="home-option-title">Book a Reading</h3>
+                    <p class="home-option-desc">Book a personal reading with me.</p>
                 </button>
 
                 <button id="home-website" class="home-option-btn">
@@ -88,45 +54,60 @@
                     <h3 class="home-option-title">Visit Our Website</h3>
                     <p class="home-option-desc">Your path continues beyond the cards.</p>
                 </button>
+
+                <button id="home-card-library" class="home-option-btn home-option-btn--wide">
+                    <div class="home-option-icon">
+                        <img src="images/ReadingsButton.png" alt="Explore the Deck" class="icon-image">
+                    </div>
+                    <h3 class="home-option-title">Explore the Deck</h3>
+                    <p class="home-option-desc">Browse all 78 cards and their meanings.</p>
+                </button>
+            </div>
+        </div>
+
+        <!-- Card Library -->
+        <div id="card-library" class="card-library hidden">
+            <div class="library-header">
+                <h2 class="library-title">Explore the Deck</h2>
+                <p class="library-subtitle">78 cards. Each one a world.</p>
+            </div>
+            <div id="library-grid" class="library-grid"></div>
+        </div>
+
+        <!-- Card Detail Modal -->
+        <div id="card-detail-modal" class="card-detail-modal hidden">
+            <div class="card-detail-content">
+                <button id="close-card-detail" class="card-detail-close">✕</button>
+                <div id="card-detail-body"></div>
             </div>
         </div>
 
         <!-- Spread Selection -->
         <div id="spread-selection" class="spread-selection hidden">
-            <h2 class="spread-title">Choose Your Reading</h2>
-
-            <!-- Question Prompt Section -->
             <div class="spread-question-section">
-                <label for="reading-question" class="spread-question-label">What guidance do you seek?</label>
+                <label for="reading-question" class="spread-question-label">Question I have for the cards</label>
                 <textarea
                     id="reading-question"
                     class="spread-question-input"
-                    placeholder="Enter your question (optional)"
+                    placeholder="What are you seeking guidance on? (optional)"
                     rows="2"></textarea>
             </div>
-
-            <div class="button-group">
-                <button id="one-card-btn" class="spread-btn-img">
-                    <img src="cards/images/wildmother_tarot_one.png" alt="One Card Spread">
-                </button>
-                <button id="three-card-btn" class="spread-btn-img">
-                    <img src="cards/images/wildmother_tarot_4card.png" alt="Three Card Spread">
-                </button>
-            </div>
+            <button id="hold-question-btn" class="primary-btn hold-question-btn">Hold This in Your Heart</button>
         </div>
 
         <!-- Physical Deck Prompt -->
         <div id="physical-deck-prompt" class="physical-deck-prompt hidden">
-            <h2>Time to Pull Your Cards</h2>
+            <h2>Shuffle. Listen. Trust.</h2>
             <p class="prompt-instruction">
-                Take your Wild Mother deck in your hands. Shuffle while holding your question in your heart.
+                Take your Wildmother Tarot deck in your hands, then shuffle while holding your question in your heart.
             </p>
             <p class="prompt-subtext">
-                When you feel ready, pull <span id="cards-to-pull">1</span> card(s) and place them face-up before you.
+                If a card pops out, that's your card. Or when you feel called to, pull a card.
             </p>
             <p class="prompt-guidance">
                 There's no rush. Trust your intuition. The cards that call to you are meant for you in this moment.
             </p>
+            <div class="prompt-divider"><span class="prompt-divider-glyph">✦</span></div>
             <button id="continue-to-picker" class="primary-btn">I've Pulled My Cards</button>
             <div class="digital-fallback">
                 <button id="use-digital-cards" class="subtle-link">
@@ -137,12 +118,37 @@
 
         <!-- Card Picker -->
         <div id="card-picker" class="card-picker hidden">
-            <h2>Tell Us Which Cards You Pulled</h2>
+            <div id="card-picker-question" class="card-picker-question hidden">
+                <p class="card-picker-question-label">Your question</p>
+                <p id="card-picker-question-text" class="card-picker-question-text"></p>
+            </div>
+            <h2>Which card came to you?</h2>
             <p class="picker-instruction">
-                Look at your physical cards and search for them below. Not sure of the exact name? Start typing and we'll help you find it.
+                Which card came home to you? Start typing its name below.
             </p>
             <div id="card-picker-positions"></div>
             <button id="confirm-cards" class="primary-btn" disabled>Continue to Your Reading</button>
+        </div>
+
+        <!-- Card Images Display (New) -->
+        <div id="card-images-display" class="card-images-display hidden">
+            <div id="card-images-question" class="card-images-question hidden">
+                <h3>Your Question</h3>
+                <p id="card-images-question-text"></p>
+            </div>
+
+            <div id="card-images-grid" class="card-images-grid"></div>
+
+            <div class="card-images-actions">
+                <button id="open-journal-btn" class="primary-btn journal-btn journal-btn-primary">
+                    <span class="btn-icon">📖</span>
+                    <span class="btn-text">Record in Journal</span>
+                </button>
+                <button id="explore-meanings-btn" class="primary-btn explore-btn">
+                    <span class="btn-icon">✨</span>
+                    <span class="btn-text">Explore with Wild Mother Guide</span>
+                </button>
+            </div>
         </div>
 
         <!-- Card Display Area (keep for backwards compatibility but hide) -->
@@ -203,6 +209,25 @@
             <button id="journal-back-btn" class="back-btn">← Back to Home</button>
             <h2 class="journal-title">Your Journal</h2>
 
+            <!-- Journal Calendar -->
+            <div id="journal-calendar" class="journal-calendar">
+                <div class="calendar-header">
+                    <button id="cal-prev" class="cal-nav-btn">&#8249;</button>
+                    <h3 id="cal-month-title" class="cal-month-title"></h3>
+                    <button id="cal-next" class="cal-nav-btn">&#8250;</button>
+                </div>
+                <div class="calendar-weekdays">
+                    <span>Sun</span>
+                    <span>Mon</span>
+                    <span>Tue</span>
+                    <span>Wed</span>
+                    <span>Thu</span>
+                    <span>Fri</span>
+                    <span>Sat</span>
+                </div>
+                <div id="calendar-grid" class="calendar-grid"></div>
+            </div>
+
             <div id="journal-loading" class="journal-loading hidden">
                 <p>Loading your entries...</p>
             </div>
@@ -227,16 +252,79 @@
                 <div id="entry-detail-content"></div>
             </div>
         </div>
+
+        <!-- Journal Entry Modal (Structured Format) -->
+        <div id="journal-entry-modal" class="journal-entry-modal hidden">
+            <div class="journal-entry-modal-content">
+                <button id="close-journal-entry-modal" class="modal-close-btn">✕</button>
+
+                <h2 class="journal-entry-title">Record Your Reading</h2>
+
+                <!-- Question Field -->
+                <div class="journal-field">
+                    <label for="journal-question-input">Question I Asked</label>
+                    <input
+                        type="text"
+                        id="journal-question-input"
+                        class="journal-input"
+                        placeholder="What question did you ask the cards? (optional)">
+                </div>
+
+                <!-- Cards Field -->
+                <div class="journal-field">
+                    <label for="journal-cards-input">Cards I Pulled</label>
+                    <div class="journal-cards-section">
+                        <div class="journal-cards-input-wrapper">
+                            <input
+                                type="text"
+                                id="journal-cards-input"
+                                class="journal-input"
+                                placeholder="Start typing a card name..."
+                                autocomplete="off">
+                            <div id="journal-card-suggestions" class="journal-card-suggestions hidden"></div>
+                        </div>
+                        <div id="journal-selected-cards" class="journal-selected-cards"></div>
+                    </div>
+                </div>
+
+                <!-- My Reflections Field -->
+                <div class="journal-field">
+                    <label for="journal-reflections-textarea">My Reflections</label>
+                    <textarea
+                        id="journal-reflections-textarea"
+                        class="journal-textarea"
+                        placeholder="What insights arise? What do these cards reveal?"
+                        rows="6"></textarea>
+                </div>
+
+                <!-- Optional GPT Insights Field -->
+                <div class="journal-field">
+                    <label for="journal-gpt-insights-textarea">
+                        GPT Insights
+                        <span class="field-optional">(optional)</span>
+                    </label>
+                    <textarea
+                        id="journal-gpt-insights-textarea"
+                        class="journal-textarea"
+                        placeholder="Copy and paste any insights from your GPT conversation here..."
+                        rows="4"></textarea>
+                </div>
+
+                <div class="journal-modal-actions">
+                    <button id="save-journal-modal-btn" class="primary-btn save-btn">Save to Journal</button>
+                    <div id="journal-modal-save-message" class="save-message hidden"></div>
+                </div>
+
+                <div class="journal-modal-secondary">
+                    <button id="journal-to-gpt-btn" class="subtle-link">
+                        Or explore with Wild Mother Guide ✨
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="js/auth.js"></script>
     <script src="js/script.js"></script>
-    <script>
-        // Display logged-in user in menu
-        const user = getUserFromToken();
-        if (user && user.email) {
-            document.getElementById('menuUserEmail').textContent = user.email;
-        }
-    </script>
 </body>
 </html>
