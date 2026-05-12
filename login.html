@@ -55,7 +55,7 @@
     <script>
         // Check if already logged in - redirect to main app
         if (isAuthenticated()) {
-            window.location.href = 'index.html';
+            window.location.href = 'app.html';
         }
 
         // Check for registration success message
@@ -94,7 +94,7 @@
 
                 // Redirect to main app after brief delay
                 setTimeout(() => {
-                    window.location.href = 'index.html';
+                    window.location.href = 'app.html';
                 }, 1000);
             } else {
                 showMessage('message', result.error, 'error');
