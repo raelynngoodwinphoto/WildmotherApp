@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tarot Card Reading</title>
     <link rel="stylesheet" href="css/styles.css">
+    <script>
+        (function() {
+            var token = localStorage.getItem('accessToken');
+            if (!token) { window.location.href = 'login.html'; return; }
+            try {
+                var payload = JSON.parse(atob(token.split('.')[1]));
+                if (payload.exp && payload.exp * 1000 < Date.now()) {
+                    window.location.href = 'login.html';
+                }
+            } catch(e) {
+                window.location.href = 'login.html';
+            }
+        })();
+    </script>
 </head>
 <body>
     <div class="container">
