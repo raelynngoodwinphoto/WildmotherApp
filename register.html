@@ -39,10 +39,10 @@
                     name="password"
                     placeholder="Enter your password"
                     required
-                    minlength="6"
+                    minlength="10"
                     autocomplete="new-password"
                 >
-                <p class="password-requirements">Must be at least 6 characters</p>
+                <p class="password-requirements">Must be at least 10 characters and include an uppercase letter, a number, and a special character</p>
             </div>
 
             <div class="form-group">
@@ -97,9 +97,21 @@
                 return;
             }
 
-            // Validate password length
-            if (password.length < 6) {
-                showMessage('message', 'Password must be at least 6 characters', 'error');
+            // Validate password strength: 10+ chars, uppercase, number, special char
+            if (password.length < 10) {
+                showMessage('message', 'Password must be at least 10 characters', 'error');
+                return;
+            }
+            if (!/[A-Z]/.test(password)) {
+                showMessage('message', 'Password must include at least one uppercase letter', 'error');
+                return;
+            }
+            if (!/[0-9]/.test(password)) {
+                showMessage('message', 'Password must include at least one number', 'error');
+                return;
+            }
+            if (!/[^A-Za-z0-9]/.test(password)) {
+                showMessage('message', 'Password must include at least one special character', 'error');
                 return;
             }
 
